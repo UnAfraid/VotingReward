@@ -81,30 +81,28 @@ public class VotingReward implements IVoicedCommandHandler
 	}
 	
 	@Override
-	public boolean useVoicedCommand(String command, L2PcInstance activeChar, String params)
+	public synchronized boolean useVoicedCommand(String command, L2PcInstance activeChar, String params)
 	{
+		long time = getLastVotedTime(activeChar);
+		
+		// Make sure player haven't received reward already!
+		if (time > 0)
+		{
+			sendReEnterMessage(time, activeChar);
+			return false;
+		}
+		
+		// Check if player votted
 		if (isVotter(activeChar.getClient().getConnectionAddress().getHostAddress()))
 		{
-			synchronized (this)
-			{
-				long time = getLastVotedTime(activeChar);
-				
-				// Make sure player haven't received reward already!
-				if (time > 0)
-				{
-					sendReEnterMessage(time, activeChar);
-					return false;
-				}
-				
-				// Give him reward
-				giveReward(activeChar);
-				
-				// Mark down this reward as given
-				markAsVotted(activeChar);
-				
-				// Say thanks ;)
-				activeChar.sendMessage("Thanks for voting here's some reward!");
-			}
+			// Give him reward
+			giveReward(activeChar);
+			
+			// Mark down this reward as given
+			markAsVotted(activeChar);
+			
+			// Say thanks ;)
+			activeChar.sendMessage("Thanks for voting here's some reward!");
 		}
 		else
 		{
