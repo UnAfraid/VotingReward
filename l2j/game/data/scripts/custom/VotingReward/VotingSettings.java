@@ -98,16 +98,9 @@ public class VotingSettings extends DocumentParser
 									case "message":
 									{
 										attrs = a.getAttributes();
-										String type = parseString(attrs, "type");
-										String content = a.getTextContent();
-										for (MessageType mType : MessageType.values())
-										{
-											if (mType.name().equalsIgnoreCase(type))
-											{
-												_messages.put(mType, content);
-												break;
-											}
-										}
+										final MessageType type = parseEnum(attrs, MessageType.class, "type");
+										final String content = a.getTextContent();
+										_messages.put(type, content);
 										break;
 									}
 								}
