@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<list xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="VotingReward.xsd">
+	<api id="YOUR TOPZONE SERVER ID HERE" key="YOUR TOPZONE API KEY HERE" />
+	<voting command="getreward" interval="12hours" />
+	<nameColor r="0" g="131" b="218" /> <!-- Blue -->
+	<messages>
+		<message type="ON_SUCCESS">Thank you for voting! Here is small reward from us!</message>
+		<message type="ON_NOT_VOTED">You haven't voted yet!</message>
+		<message type="ON_REUSE">You can vote again after: %hours% hours, %mins% minutes and %secs% seconds!</message>
+	</messages>
+	<rewards>
+		<group chance="100">
+			<item id="6673" min="1" max="5" chance="60" /> <!-- Festival Adena -->
+			<item id="4355" min="1" max="3" chance="40" /> <!-- Blue Eva -->
+		</group>
+	</rewards>
+</list>
