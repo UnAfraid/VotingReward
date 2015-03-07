@@ -35,6 +35,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.l2jserver.L2DatabaseFactory;
+import com.l2jserver.gameserver.ThreadPoolManager;
 import com.l2jserver.gameserver.handler.IVoicedCommandHandler;
 import com.l2jserver.gameserver.model.actor.instance.L2PcInstance;
 
@@ -81,7 +82,7 @@ public class VotingReward implements IVoicedCommandHandler
 	}
 	
 	@Override
-	public synchronized boolean useVoicedCommand(String command, L2PcInstance activeChar, String params)
+	public boolean useVoicedCommand(String command, L2PcInstance activeChar, String params)
 	{
 		if (activeChar.isGM() && "reload".equals(params))
 		{
@@ -99,28 +100,31 @@ public class VotingReward implements IVoicedCommandHandler
 			return false;
 		}
 		
-		// Check if player votted
-		if (isVotter(activeChar.getClient().getConnectionAddress().getHostAddress()))
+		ThreadPoolManager.getInstance().executeGeneral(() ->
 		{
-			// Give him reward
-			giveReward(activeChar);
-			
-			// Mark down this reward as given
-			markAsVotted(activeChar);
-			
-			// Send message to player
-			final String msg = VotingSettings.getInstance().getMessage(MessageType.ON_SUCCESS);
-			if (msg != null)
+			// Check if player votted
+			if (isVotter(activeChar.getClient().getConnectionAddress().getHostAddress()))
 			{
-				activeChar.sendMessage(msg);
+				// Give him reward
+				giveReward(activeChar);
+				
+				// Mark down this reward as given
+				markAsVotted(activeChar);
+				
+				// Send message to player
+				final String msg = VotingSettings.getInstance().getMessage(MessageType.ON_SUCCESS);
+				if (msg != null)
+				{
+					activeChar.sendMessage(msg);
+				}
 			}
-		}
-		else
-		{
-			final String msg = VotingSettings.getInstance().getMessage(MessageType.ON_NOT_VOTED);
-			if (msg != null)
+			else
 			{
-				activeChar.sendMessage(msg);
+				final String msg = VotingSettings.getInstance().getMessage(MessageType.ON_NOT_VOTED);
+				if (msg != null)
+				{
+					activeChar.sendMessage(msg);
+				}
 			}
 		}
 		return false;
@@ -192,7 +196,7 @@ public class VotingReward implements IVoicedCommandHandler
 		}
 	}
 	
-	private static final long getLastVotedTime(L2PcInstance activeChar)
+	private static final synchronized long getLastVotedTime(L2PcInstance activeChar)
 	{
 		for (Entry<UserScope, ScopeContainer> entry : VOTTERS_CACHE.entrySet())
 		{
@@ -240,6 +244,7 @@ public class VotingReward implements IVoicedCommandHandler
 			
 			// add request header
 			con.setRequestProperty("User-Agent", USER_AGENT);
+			con.setConnectTimeout(10 * 1000);
 			
 			final int responseCode = con.getResponseCode();
 			if (responseCode == 200) // OK
