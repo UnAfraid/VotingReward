@@ -76,7 +76,7 @@ public class VotingReward implements IVoicedCommandHandler
 		VotingSettings.getInstance().getVotingCommand(),
 	};
 	
-	public VotingReward()
+	private VotingReward()
 	{
 		load();
 	}
@@ -272,5 +272,10 @@ public class VotingReward implements IVoicedCommandHandler
 	public String[] getVoicedCommandList()
 	{
 		return COMMANDS;
+	}
+	
+	public static void main(String[] args) 
+	{
+		new VotingReward();
 	}
 }
