@@ -35,6 +35,18 @@ public class L2JPlayer implements IPlayerInstance
 	}
 	
 	@Override
+	public int getObjectId()
+	{
+		return _player.getObjectId();
+	}
+	
+	@Override
+	public String getName()
+	{
+		return _player.getName();
+	}
+	
+	@Override
 	public boolean isGM()
 	{
 		return _player.isGM();

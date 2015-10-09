@@ -25,6 +25,10 @@ import com.github.unafraid.votingreward.interfaceprovider.model.RewardItemHolder
  */
 public interface IPlayerInstance
 {
+	public int getObjectId();
+	
+	public String getName();
+	
 	public boolean isGM();
 	
 	public void sendMessage(String message);
