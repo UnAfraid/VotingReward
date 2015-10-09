@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2004-2014 L2J DataPack
+ * Copyright (C) 2004-2015 L2J DataPack
  * 
  * This file is part of L2J DataPack.
  * 
@@ -34,7 +34,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.l2jserver.L2DatabaseFactory;
+import com.l2jserver.commons.database.pool.impl.ConnectionFactory;
 import com.l2jserver.gameserver.ThreadPoolManager;
 import com.l2jserver.gameserver.handler.IVoicedCommandHandler;
 import com.l2jserver.gameserver.model.actor.instance.L2PcInstance;
@@ -126,7 +126,7 @@ public class VotingReward implements IVoicedCommandHandler
 					activeChar.sendMessage(msg);
 				}
 			}
-		}
+		});
 		return false;
 	}
 	
@@ -139,7 +139,7 @@ public class VotingReward implements IVoicedCommandHandler
 		}
 		
 		// Cleanup old entries and load the data for votters
-		try (Connection con = L2DatabaseFactory.getInstance().getConnection();
+		try (Connection con = ConnectionFactory.getInstance().getConnection();
 			PreparedStatement ps = con.prepareStatement(DELETE_QUERY);
 			Statement st = con.createStatement())
 		{
@@ -213,7 +213,7 @@ public class VotingReward implements IVoicedCommandHandler
 	private static final void markAsVotted(final L2PcInstance player)
 	{
 		final long reuse = System.currentTimeMillis() + VOTING_INTERVAL;
-		try (Connection con = L2DatabaseFactory.getInstance().getConnection();
+		try (Connection con = ConnectionFactory.getInstance().getConnection();
 			PreparedStatement ps = con.prepareStatement(INSERT_QUERY))
 		{
 			for (UserScope scope : UserScope.values())
@@ -274,7 +274,7 @@ public class VotingReward implements IVoicedCommandHandler
 		return COMMANDS;
 	}
 	
-	public static void main(String[] args) 
+	public static void main(String[] args)
 	{
 		new VotingReward();
 	}
