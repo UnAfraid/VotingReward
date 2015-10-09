@@ -1,0 +1,33 @@
+subprojects {
+	apply plugin: 'eclipse'
+	
+	repositories {
+		mavenCentral()
+	}
+	
+	tasks.withType(JavaCompile) {
+		options.encoding = 'UTF-8'
+	}
+	
+	eclipse {
+		project {
+			natures('org.springsource.ide.eclipse.gradle.core.nature')
+			natures('org.eclipse.buildship.core.gradleprojectbuilde')
+		}
+	}
+
+	tasks.eclipse.doLast {
+		copy {
+			from('../eclipse-settings')
+			into('.settings')
+		}
+	}
+
+	tasks.cleanEclipse.doLast {
+		delete('.settings')
+	}
+}
+
+task wrapper(type: Wrapper) {
+	gradleVersion = '2.7'
+}

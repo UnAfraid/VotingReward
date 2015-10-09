@@ -1,0 +1,3 @@
+include('VotingRewardAPI')
+include('VotingRewardInterfaceProvider')
+include('VotingRewardL2jInterface')
