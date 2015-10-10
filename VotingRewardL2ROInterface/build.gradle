@@ -1,0 +1,70 @@
+apply plugin: 'java'
+apply plugin: 'distribution'
+
+defaultTasks('distZip')
+
+tasks.withType(JavaCompile) {
+	options.encoding = 'UTF-8'
+}
+
+dependencies {
+	compile project(':VotingRewardInterfaceProvider')
+	compile 'org.slf4j:slf4j-api:1.7.12'
+	compile(fileTree(dir: 'libs', include: '*.jar'))
+	
+	runtime 'org.slf4j:slf4j-jdk14:1.7.12'
+	runtime project(':VotingRewardAPI')
+}
+
+compileJava {
+    //enable compilation in a separate daemon process
+    options.fork = true
+
+    //enable incremental compilation
+    options.incremental = true
+    
+    // Exclude custom from being compiled
+    exclude('**/custom/**')
+}
+
+
+
+def generalManifest = manifest {
+	attributes(
+		'Built-By': System.getProperty('user.name'),
+		'Implementation-URL': 'https://github.com/UnAfraid/VotingRewardAPI')
+}
+
+jar {
+	archiveName = 'VotingRewardL2ROInterface.jar'
+	exclude('**/custom/**')
+	manifest {
+		from(generalManifest)
+	}
+}
+
+
+distributions {
+	main {
+		contents {
+			from('dist')
+			into('gameserver/libs') {
+				from(configurations.runtime)
+				from(jar)
+				exclude('**/custom/**')
+				exclude('org.napile.primitive.jar')
+				exclude('l2ro-*.jar')
+				exclude('slf4j-*')
+			}
+			
+			into('gameserver/data/scripts') {
+				from('src/main/java') {
+					include('**/custom/**')
+					exclude('**/com/**');
+				}
+			}
+		}
+	}
+}
+
+
