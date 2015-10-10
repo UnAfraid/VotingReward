@@ -10,17 +10,34 @@ tasks.withType(JavaCompile) {
 dependencies {
 	compile project(':VotingRewardInterfaceProvider')
 	compile 'org.slf4j:slf4j-api:1.7.12'
-	compile 'org.slf4j:slf4j-jdk14:1.7.12'
 	compile(fileTree(dir: 'libs', include: '*.jar'))
+	
+	runtime 'org.slf4j:slf4j-jdk14:1.7.12'
+	runtime project(':VotingRewardAPI')
 }
 
+compileJava {
+    //enable compilation in a separate daemon process
+    options.fork = true
+
+    //enable incremental compilation
+    options.incremental = true
+    
+    // Exclude custom from being compiled
+    exclude('**/custom/**')
+}
+
+
+
 def generalManifest = manifest {
-	attributes('Built-By': System.getProperty('user.name'),
-			'Implementation-URL': 'https://github.com/UnAfraid/VotingRewardAPI')
+	attributes(
+		'Built-By': System.getProperty('user.name'),
+		'Implementation-URL': 'https://github.com/UnAfraid/VotingRewardAPI')
 }
 
 jar {
 	archiveName = 'VotingRewardL2JInterface.jar'
+	exclude('**/custom/**')
 	manifest {
 		from(generalManifest)
 	}
@@ -31,8 +48,20 @@ distributions {
 	main {
 		contents {
 			from('dist')
-			into('libs') {
+			into('L2J_Server/dist/libs') {
+				from(configurations.runtime)
 				from(jar)
+				exclude('**/custom/**')
+				exclude('l2jserver.jar')
+				exclude('mmocore.jar')
+				exclude('slf4j-*')
+			}
+			
+			into('L2J_DataPack/dist/game/data/scripts') {
+				from('src/main/java') {
+					include('**/custom/**')
+					exclude('**/com/**');
+				}
 			}
 		}
 	}
