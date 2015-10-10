@@ -1,3 +1,4 @@
 include('VotingRewardAPI')
 include('VotingRewardInterfaceProvider')
 include('VotingRewardL2jInterface')
+include('VotingRewardL2ROInterface')

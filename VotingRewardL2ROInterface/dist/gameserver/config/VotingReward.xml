@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<list xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../data/xsd/VotingReward.xsd">
+	<!-- API Data can be found here http://l2topzone.com/myhome.html -->
+	<!-- Select your server and click 'Reward' -->
+	<api id="YOUR TOPZONE SERVER ID HERE" key="YOUR TOPZONE API KEY HERE" />
+	<voting command="getreward" interval="12hours" />
+	<nameColor r="0" g="131" b="218" /> <!-- Blue -->
+	<messages>
+		<message type="ON_SUCCESS">Thank you for voting! Here is small reward from us!</message>
+		<message type="ON_NOT_VOTED">You haven't voted yet!</message>
+		<message type="ON_REUSE">You can vote again after: %hours% hours, %mins% minutes and %secs% seconds!</message>
+	</messages>
+	<rewards>
+		<!-- 1st group chance to enter 100% -->
+		<group chance="100">
+			<!-- The sum of chance inside the group must be always 100% so it always selects at least one item from it! -->
+			<!-- Only one item will be selected from a group -->
+			<item id="6673" min="1" max="2" chance="60" /> <!-- Festival Adena -->
+			<item id="6673" min="2" max="5" chance="40" /> <!-- Festival Adena -->
+		</group>
+		<!-- 2nd group -->
+		<group chance="60">
+			<item id="4355" min="1" max="3" chance="60" /> <!-- Blue Eva -->
+			<item id="4355" min="3" max="5" chance="40" /> <!-- Blue Eva -->
+		</group>
+	</rewards>
+</list>
