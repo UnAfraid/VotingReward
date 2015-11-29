@@ -3,6 +3,9 @@ apply plugin: 'distribution'
 
 defaultTasks('distZip')
 
+sourceCompatibility = JavaVersion.VERSION_1_7
+targetCompatibility = JavaVersion.VERSION_1_7
+
 tasks.withType(JavaCompile) {
 	options.encoding = 'UTF-8'
 }
