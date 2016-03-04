@@ -90,7 +90,7 @@ public class VotingRewardCache
 		}
 	}
 	
-	public void markAsVotted(IPlayerInstance player)
+	public synchronized void markAsVotted(IPlayerInstance player)
 	{
 		final long reuse = System.currentTimeMillis() + VOTING_INTERVAL;
 		try (Connection con = VotingRewardInterfaceProvider.getInstance().getInterface().getDatabaseConnection();
