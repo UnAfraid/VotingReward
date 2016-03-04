@@ -46,8 +46,10 @@ public class VotingRewardTask implements Runnable
 	@Override
 	public void run()
 	{
+		final long timeRemaining = VotingRewardCache.getInstance().getLastVotedTime(_player);
+		
 		// Check if player votted
-		if (isVotter(_player.getIPAddress()))
+		if (isVotter(_player.getIPAddress()) && (timeRemaining <= 0))
 		{
 			// Give him reward
 			giveReward(_player);
