@@ -90,7 +90,7 @@ public class VotingRewardCache
 		}
 	}
 	
-	public synchronized void markAsVotted(IPlayerInstance player)
+	public void markAsVotted(IPlayerInstance player)
 	{
 		final long reuse = System.currentTimeMillis() + VOTING_INTERVAL;
 		try (Connection con = VotingRewardInterfaceProvider.getInstance().getInterface().getDatabaseConnection();
@@ -118,21 +118,22 @@ public class VotingRewardCache
 		}
 	}
 	
-	public synchronized long getLastVotedTime(IPlayerInstance player)
+	public long getLastVotedTime(IPlayerInstance player)
 	{
+		long lastVotedTime = 0;
 		for (Entry<UserScope, ScopeContainer> entry : VOTTERS_CACHE.entrySet())
 		{
 			if (entry.getKey().isSupported(player))
 			{
 				final String data = entry.getKey().getData(player);
 				final long reuse = entry.getValue().getReuse(data);
-				if (reuse > 0)
+				if (reuse > lastVotedTime)
 				{
-					return reuse;
+					lastVotedTime = reuse;
 				}
 			}
 		}
-		return 0;
+		return lastVotedTime;
 	}
 	
 	protected static final VotingRewardCache getInstance()

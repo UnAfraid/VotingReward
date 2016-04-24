@@ -30,53 +30,45 @@ import com.github.unafraid.votingreward.model.RewardItem;
 /**
  * @author UnAfraid
  */
-public class VotingRewardTask implements Runnable
+public class VotingRewardTask
 {
 	// Constants
 	private static final String USER_AGENT = "L2TopZone";
 	private static final String API_URL = "http://l2topzone.com/api.php?API_KEY=%s&SERVER_ID=%d&IP=%s";
 	
-	private final IPlayerInstance _player;
-	
 	public VotingRewardTask(IPlayerInstance player)
 	{
-		_player = player;
-	}
-	
-	@Override
-	public void run()
-	{
-		final long timeRemaining = VotingRewardCache.getInstance().getLastVotedTime(_player);
+		final long timeRemaining = VotingRewardCache.getInstance().getLastVotedTime(player);
 		
-		// Check if player votted
-		if (isVotter(_player.getIPAddress()) && (timeRemaining <= 0))
+		// Check if player voted
+		if ((timeRemaining <= 0) && isVotter(player.getIPAddress()))
 		{
 			// Give him reward
-			giveReward(_player);
+			giveReward(player);
 			
 			// Mark down this reward as given
-			VotingRewardCache.getInstance().markAsVotted(_player);
+			VotingRewardCache.getInstance().markAsVotted(player);
 			
 			// Send message to player
 			final String msg = VotingSettings.getInstance().getMessage(MessageType.ON_SUCCESS);
 			if (msg != null)
 			{
-				_player.sendMessage(msg);
+				player.sendMessage(msg);
 			}
 			
 			// Notify to scripts
-			VotingRewardInterfaceProvider.getInstance().getInterface().onSuccessfulVote(_player);
+			VotingRewardInterfaceProvider.getInstance().getInterface().onSuccessfulVote(player);
 		}
 		else
 		{
 			final String msg = VotingSettings.getInstance().getMessage(MessageType.ON_NOT_VOTED);
 			if (msg != null)
 			{
-				_player.sendMessage(msg);
+				player.sendMessage(msg);
 			}
 			
 			// Notify to scripts
-			VotingRewardInterfaceProvider.getInstance().getInterface().onNotVoted(_player);
+			VotingRewardInterfaceProvider.getInstance().getInterface().onNotVoted(player);
 		}
 	}
 	
@@ -102,7 +94,7 @@ public class VotingRewardTask implements Runnable
 			final int responseCode = con.getResponseCode();
 			if (responseCode == 200) // OK
 			{
-				final StringBuffer sb = new StringBuffer();
+				final StringBuilder sb = new StringBuilder();
 				try (BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream())))
 				{
 					String inputLine;

@@ -18,6 +18,11 @@
  */
 package com.github.unafraid.votingreward;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+
 import com.github.unafraid.votingreward.VotingSettings.MessageType;
 import com.github.unafraid.votingreward.interfaceprovider.api.IOnVoicedCommandHandler;
 import com.github.unafraid.votingreward.interfaceprovider.api.IPlayerInstance;
@@ -25,17 +30,19 @@ import com.github.unafraid.votingreward.interfaceprovider.api.IPlayerInstance;
 /**
  * @author UnAfraid
  */
-public class VotingRewardAPI implements IOnVoicedCommandHandler
+public class VotingRewardAPI implements IOnVoicedCommandHandler, Runnable
 {
 	private static final String[] COMMANDS =
 	{
 		VotingSettings.getInstance().getVotingCommand(),
 	};
 	
+	private final Map<Integer, IPlayerInstance> _tasks = new ConcurrentHashMap<>();
+	
 	protected VotingRewardAPI()
 	{
 		VotingRewardInterfaceProvider.getInstance().getInterface().registerHandler(this);
-		VotingSettings.getInstance();
+		Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(this, 1, 1, TimeUnit.SECONDS);
 	}
 	
 	@Override
@@ -58,8 +65,29 @@ public class VotingRewardAPI implements IOnVoicedCommandHandler
 			return false;
 		}
 		
-		VotingRewardInterfaceProvider.getInstance().getInterface().executeTask(new VotingRewardTask(player));
+		// Add rewarding task
+		if (_tasks.putIfAbsent(player.getObjectId(), player) != null)
+		{
+			player.sendMessage("You already requested reward, please wait..");
+			return false;
+		}
+		player.sendMessage("You're rewarding request has been enqueued, verifying your vote please wait..");
 		return true;
+	}
+	
+	@Override
+	public void run()
+	{
+		if (_tasks.isEmpty())
+		{
+			return;
+		}
+		
+		for (IPlayerInstance player : _tasks.values())
+		{
+			new VotingRewardTask(player);
+			_tasks.remove(player.getObjectId());
+		}
 	}
 	
 	private static void sendReEnterMessage(long time, IPlayerInstance player)
