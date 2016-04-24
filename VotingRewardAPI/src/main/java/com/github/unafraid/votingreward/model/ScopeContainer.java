@@ -34,11 +34,14 @@ public class ScopeContainer
 	{
 		if (_votters.containsKey(data))
 		{
-			long time = _votters.get(data);
+			final long time = _votters.get(data);
 			if (time > System.currentTimeMillis())
 			{
 				return time;
 			}
+			
+			// Cleanup expired time-stamps
+			_votters.remove(data);
 		}
 		return 0;
 	}
