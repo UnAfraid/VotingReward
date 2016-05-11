@@ -85,8 +85,19 @@ public class VotingRewardAPI implements IOnVoicedCommandHandler, Runnable
 		
 		for (IPlayerInstance player : _tasks.values())
 		{
-			new VotingRewardTask(player);
-			_tasks.remove(player.getObjectId());
+			try
+			{
+				new VotingRewardTask(player);
+			}
+			catch (Exception e)
+			{
+				player.sendMessage("Failed to deliver rewards!");
+				VotingRewardInterfaceProvider.getInstance().getInterface().logError("Failed to deliver rewards", e);
+			}
+			finally
+			{
+				_tasks.remove(player.getObjectId());
+			}
 		}
 	}
 	
