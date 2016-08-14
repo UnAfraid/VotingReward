@@ -62,7 +62,7 @@ public class VotingRewardCache
 		}
 		
 		// Cleanup old entries and load the data for votters
-		try (Connection con = VotingRewardInterfaceProvider.getInstance().getInterface().getDatabaseConnection();
+		try (Connection con = VotingRewardInterfaceProvider.getInterface().getDatabaseConnection();
 			PreparedStatement ps = con.prepareStatement(DELETE_QUERY);
 			Statement st = con.createStatement())
 		{
@@ -86,14 +86,14 @@ public class VotingRewardCache
 		}
 		catch (SQLException e)
 		{
-			VotingRewardInterfaceProvider.getInstance().getInterface().logError("Failed to load voting reward data", e);
+			VotingRewardInterfaceProvider.getInterface().logError("Failed to load voting reward data", e);
 		}
 	}
 	
 	public void markAsVotted(IPlayerInstance player)
 	{
 		final long reuse = System.currentTimeMillis() + VOTING_INTERVAL;
-		try (Connection con = VotingRewardInterfaceProvider.getInstance().getInterface().getDatabaseConnection();
+		try (Connection con = VotingRewardInterfaceProvider.getInterface().getDatabaseConnection();
 			PreparedStatement ps = con.prepareStatement(INSERT_QUERY))
 		{
 			for (UserScope scope : UserScope.values())
@@ -114,7 +114,7 @@ public class VotingRewardCache
 		}
 		catch (SQLException e)
 		{
-			VotingRewardInterfaceProvider.getInstance().getInterface().logError("Failed to store voting reward data", e);
+			VotingRewardInterfaceProvider.getInterface().logError("Failed to store voting reward data", e);
 		}
 	}
 	

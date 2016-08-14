@@ -18,12 +18,9 @@
  */
 package com.github.unafraid.votingreward;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-
 import com.github.unafraid.votingreward.VotingSettings.MessageType;
+import com.github.unafraid.votingreward.api.VotingRewardAPIClient;
+import com.github.unafraid.votingreward.api.objects.UserVotingResultData;
 import com.github.unafraid.votingreward.interfaceprovider.api.IPlayerInstance;
 import com.github.unafraid.votingreward.model.RewardItem;
 
@@ -32,43 +29,52 @@ import com.github.unafraid.votingreward.model.RewardItem;
  */
 public class VotingRewardTask
 {
-	// Constants
-	private static final String USER_AGENT = "L2TopZone";
-	private static final String API_URL = "http://l2topzone.com/api.php?API_KEY=%s&SERVER_ID=%d&IP=%s";
-	
 	public VotingRewardTask(IPlayerInstance player)
 	{
-		final long timeRemaining = VotingRewardCache.getInstance().getLastVotedTime(player);
-		
-		// Check if player voted
-		if ((timeRemaining <= 0) && isVotter(player.getIPAddress()))
+		try
 		{
-			// Give him reward
-			giveReward(player);
-			
-			// Mark down this reward as given
-			VotingRewardCache.getInstance().markAsVotted(player);
-			
-			// Send message to player
-			final String msg = VotingSettings.getInstance().getMessage(MessageType.ON_SUCCESS);
-			if (msg != null)
+			final long timeRemaining = VotingRewardCache.getInstance().getLastVotedTime(player);
+			final String apiKey = VotingSettings.getInstance().getAPIKey();
+			final UserVotingResultData data = VotingRewardAPIClient.getInstance().getVoteData(player.getIPAddress(), apiKey);
+			if ((timeRemaining <= 0) && data.isVoted())
 			{
-				player.sendMessage(msg);
+				// Give him reward
+				giveReward(player);
+				
+				// Mark down this reward as given
+				VotingRewardCache.getInstance().markAsVotted(player);
+				
+				// Send message to player
+				final String msg = VotingSettings.getInstance().getMessage(MessageType.ON_SUCCESS);
+				if (msg != null)
+				{
+					player.sendMessage(msg);
+				}
+				
+				// Notify to scripts
+				VotingRewardInterfaceProvider.getInterface().onSuccessfulVote(player);
 			}
-			
-			// Notify to scripts
-			VotingRewardInterfaceProvider.getInstance().getInterface().onSuccessfulVote(player);
+			else
+			{
+				final String msg = VotingSettings.getInstance().getMessage(MessageType.ON_NOT_VOTED);
+				if (msg != null)
+				{
+					player.sendMessage(msg);
+				}
+				
+				// Notify to scripts
+				VotingRewardInterfaceProvider.getInterface().onNotVoted(player);
+			}
 		}
-		else
+		catch (Exception e)
 		{
-			final String msg = VotingSettings.getInstance().getMessage(MessageType.ON_NOT_VOTED);
+			final String msg = VotingSettings.getInstance().getMessage(MessageType.ON_ERROR);
 			if (msg != null)
 			{
 				player.sendMessage(msg);
 			}
 			
-			// Notify to scripts
-			VotingRewardInterfaceProvider.getInstance().getInterface().onNotVoted(player);
+			VotingRewardInterfaceProvider.getInterface().logError("Failed to read user data", e);
 		}
 	}
 	
@@ -78,38 +84,5 @@ public class VotingRewardTask
 		{
 			activeChar.addItem(holder);
 		}
-	}
-	
-	private static final boolean isVotter(String ip)
-	{
-		try
-		{
-			final URL obj = new URL(String.format(API_URL, VotingSettings.getInstance().getAPIKey(), VotingSettings.getInstance().getServerId(), ip));
-			final HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-			
-			// add request header
-			con.setRequestProperty("User-Agent", USER_AGENT);
-			con.setConnectTimeout(10 * 1000);
-			
-			final int responseCode = con.getResponseCode();
-			if (responseCode == 200) // OK
-			{
-				final StringBuilder sb = new StringBuilder();
-				try (BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream())))
-				{
-					String inputLine;
-					while ((inputLine = in.readLine()) != null)
-					{
-						sb.append(inputLine);
-					}
-				}
-				return sb.toString().toUpperCase().equals("TRUE");
-			}
-		}
-		catch (Exception e)
-		{
-			VotingRewardInterfaceProvider.getInstance().getInterface().logError("Failed to establish connection with voting provider", e);
-		}
-		return false;
 	}
 }

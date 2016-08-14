@@ -60,10 +60,10 @@ public class RewardList
 		List<RewardItem> itemsToDrop = null;
 		for (RewardGroup group : _groups)
 		{
-			final double groupRandom = 100 * VotingRewardInterfaceProvider.getInstance().getInterface().getRandomDouble();
+			final double groupRandom = 100 * VotingRewardInterfaceProvider.getInterface().getRandomDouble();
 			if (groupRandom < (group.getChance()))
 			{
-				final double itemRandom = 100 * VotingRewardInterfaceProvider.getInstance().getInterface().getRandomDouble();
+				final double itemRandom = 100 * VotingRewardInterfaceProvider.getInterface().getRandomDouble();
 				float cumulativeChance = 0;
 				for (RewardItem item : group.getItems())
 				{

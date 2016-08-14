@@ -191,9 +191,10 @@ public class VotingSettings extends DocumentParser
 		ON_SUCCESS,
 		ON_NOT_VOTED,
 		ON_REUSE,
+		ON_ERROR,
 	}
 	
-	protected static final VotingSettings getInstance()
+	public static final VotingSettings getInstance()
 	{
 		return SingletonHolder.INSTANCE;
 	}

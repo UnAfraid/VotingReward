@@ -49,7 +49,7 @@ public class RewardItem extends RewardItemHolder
 	@Override
 	public long getCount()
 	{
-		return VotingRewardInterfaceProvider.getInstance().getInterface().getRandom(_min, _max);
+		return VotingRewardInterfaceProvider.getInterface().getRandom(_min, _max);
 	}
 	
 	public int getMin()

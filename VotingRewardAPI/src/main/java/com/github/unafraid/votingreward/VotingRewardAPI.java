@@ -18,8 +18,8 @@
  */
 package com.github.unafraid.votingreward;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
@@ -37,11 +37,11 @@ public class VotingRewardAPI implements IOnVoicedCommandHandler, Runnable
 		VotingSettings.getInstance().getVotingCommand(),
 	};
 	
-	private final Map<Integer, IPlayerInstance> _tasks = new ConcurrentHashMap<>();
+	private final Queue<IPlayerInstance> _tasks = new ConcurrentLinkedQueue<>();
 	
 	protected VotingRewardAPI()
 	{
-		VotingRewardInterfaceProvider.getInstance().getInterface().registerHandler(this);
+		VotingRewardInterfaceProvider.getInterface().registerHandler(this);
 		Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(this, 1, 1, TimeUnit.SECONDS);
 	}
 	
@@ -61,17 +61,18 @@ public class VotingRewardAPI implements IOnVoicedCommandHandler, Runnable
 		if (timeRemaining > 0)
 		{
 			sendReEnterMessage(timeRemaining, player);
-			VotingRewardInterfaceProvider.getInstance().getInterface().onInReuse(player, timeRemaining);
+			VotingRewardInterfaceProvider.getInterface().onInReuse(player, timeRemaining);
 			return false;
 		}
 		
 		// Add rewarding task
-		if (_tasks.putIfAbsent(player.getObjectId(), player) != null)
+		if (_tasks.contains(player))
 		{
 			player.sendMessage("You already requested reward, please wait..");
 			return false;
 		}
 		player.sendMessage("You're rewarding request has been enqueued, verifying your vote please wait..");
+		_tasks.offer(player);
 		return true;
 	}
 	
@@ -83,8 +84,14 @@ public class VotingRewardAPI implements IOnVoicedCommandHandler, Runnable
 			return;
 		}
 		
-		for (IPlayerInstance player : _tasks.values())
+		while (!_tasks.isEmpty())
 		{
+			final IPlayerInstance player = _tasks.poll();
+			if (player == null)
+			{
+				break;
+			}
+			
 			try
 			{
 				new VotingRewardTask(player);
@@ -92,11 +99,7 @@ public class VotingRewardAPI implements IOnVoicedCommandHandler, Runnable
 			catch (Exception e)
 			{
 				player.sendMessage("Failed to deliver rewards!");
-				VotingRewardInterfaceProvider.getInstance().getInterface().logError("Failed to deliver rewards", e);
-			}
-			finally
-			{
-				_tasks.remove(player.getObjectId());
+				VotingRewardInterfaceProvider.getInterface().logError("Failed to deliver rewards", e);
 			}
 		}
 	}

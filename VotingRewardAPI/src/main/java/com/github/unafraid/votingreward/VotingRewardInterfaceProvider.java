@@ -30,41 +30,45 @@ import com.github.unafraid.votingreward.interfaceprovider.IVotingRewardInterface
  */
 public class VotingRewardInterfaceProvider
 {
-	private final ServiceLoader<IVotingRewardInterfaceProvider> _provider;
-	private IVotingRewardInterfaceProvider _defaultProvider;
+	private static final ServiceLoader<IVotingRewardInterfaceProvider> PROVIDER;
+	private static IVotingRewardInterfaceProvider DEFAULT_PROVIDER;
 	
-	protected VotingRewardInterfaceProvider()
+	static
 	{
-		_provider = ServiceLoader.load(IVotingRewardInterfaceProvider.class);
+		PROVIDER = ServiceLoader.load(IVotingRewardInterfaceProvider.class);
 		double version = 0;
-		for (IVotingRewardInterfaceProvider provider : _provider)
+		for (IVotingRewardInterfaceProvider provider : PROVIDER)
 		{
 			if (provider.getVersion() > version)
 			{
-				_defaultProvider = provider;
+				DEFAULT_PROVIDER = provider;
 			}
 		}
 		
-		if (_defaultProvider == null)
+		if (DEFAULT_PROVIDER == null)
 		{
 			throw new RuntimeException("Voting Reward Interface implementation was not provided!");
 		}
-		_defaultProvider.getInterface().logInfo("VotingReward API Using interface: " + _defaultProvider.getName() + " version: " + _defaultProvider.getVersion() + " author: " + _defaultProvider.getAuthor());
+		DEFAULT_PROVIDER.getInterface().logInfo("VotingReward API Using interface: " + DEFAULT_PROVIDER.getName() + " version: " + DEFAULT_PROVIDER.getVersion() + " author: " + DEFAULT_PROVIDER.getAuthor());
 	}
 	
-	public IVotingRewardInterfaceProvider getProvider()
+	protected VotingRewardInterfaceProvider()
 	{
-		return _defaultProvider;
 	}
 	
-	public IVotingRewardInterface getInterface()
+	public static IVotingRewardInterfaceProvider getProvider()
 	{
-		return _defaultProvider.getInterface();
+		return DEFAULT_PROVIDER;
+	}
+	
+	public static IVotingRewardInterface getInterface()
+	{
+		return DEFAULT_PROVIDER.getInterface();
 	}
 	
 	public IVotingRewardInterfaceProvider getProvider(String name)
 	{
-		for (IVotingRewardInterfaceProvider provider : _provider)
+		for (IVotingRewardInterfaceProvider provider : PROVIDER)
 		{
 			if (provider.getName().equalsIgnoreCase(name))
 			{
@@ -77,20 +81,10 @@ public class VotingRewardInterfaceProvider
 	public List<IVotingRewardInterfaceProvider> getProviders()
 	{
 		final List<IVotingRewardInterfaceProvider> providers = new ArrayList<>();
-		for (IVotingRewardInterfaceProvider provider : _provider)
+		for (IVotingRewardInterfaceProvider provider : PROVIDER)
 		{
 			providers.add(provider);
 		}
 		return providers;
-	}
-	
-	public static VotingRewardInterfaceProvider getInstance()
-	{
-		return SingletonHolder.INSTANCE;
-	}
-	
-	private static class SingletonHolder
-	{
-		protected static final VotingRewardInterfaceProvider INSTANCE = new VotingRewardInterfaceProvider();
 	}
 }

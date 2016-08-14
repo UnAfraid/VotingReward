@@ -44,20 +44,22 @@ public abstract class DocumentParser
 	private static final String JAXP_SCHEMA_LANGUAGE = "http://java.sun.com/xml/jaxp/properties/schemaLanguage";
 	private static final String W3C_XML_SCHEMA = "http://www.w3.org/2001/XMLSchema";
 	/** The default file filter, ".xml" files only. */
-	private static final FileFilter XML_FILTER = new FileFilter()
-	{
-		@Override
-		public boolean accept(File f)
-		{
-			return f.getName().toLowerCase().endsWith(".xml");
-		}
-	};
+	private static final FileFilter XML_FILTER = new XMLFilter();
 	
 	private File _currentFile;
 	
 	private Document _currentDocument;
 	
 	private FileFilter _currentFilter = null;
+	
+	static class XMLFilter implements FileFilter
+	{
+		@Override
+		public boolean accept(File f)
+		{
+			return f.getName().toLowerCase().endsWith(".xml");
+		}
+	}
 	
 	/**
 	 * This method can be used to load/reload the data.<br>
@@ -71,7 +73,7 @@ public abstract class DocumentParser
 	 */
 	protected void parseDatapackFile(String path)
 	{
-		parseFile(new File(VotingRewardInterfaceProvider.getInstance().getInterface().getDocumentRoot(), path));
+		parseFile(new File(VotingRewardInterfaceProvider.getInterface().getDocumentRoot(), path));
 	}
 	
 	/**
@@ -150,7 +152,7 @@ public abstract class DocumentParser
 	 */
 	protected boolean parseDirectory(String path)
 	{
-		return parseDirectory(new File(VotingRewardInterfaceProvider.getInstance().getInterface().getDocumentRoot(), path), false);
+		return parseDirectory(new File(VotingRewardInterfaceProvider.getInterface().getDocumentRoot(), path), false);
 	}
 	
 	/**
@@ -161,7 +163,7 @@ public abstract class DocumentParser
 	 */
 	protected boolean parseDirectory(String path, boolean recursive)
 	{
-		return parseDirectory(new File(VotingRewardInterfaceProvider.getInstance().getInterface().getDocumentRoot(), path), recursive);
+		return parseDirectory(new File(VotingRewardInterfaceProvider.getInterface().getDocumentRoot(), path), recursive);
 	}
 	
 	/**
