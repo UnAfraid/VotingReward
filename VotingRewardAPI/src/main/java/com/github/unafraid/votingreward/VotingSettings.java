@@ -43,7 +43,6 @@ public class VotingSettings extends DocumentParser
 	private final RewardList _droplist = new RewardList();
 	private final Map<MessageType, String> _messages = new HashMap<>();
 	private String _apiKey;
-	private int _serverId;
 	
 	protected VotingSettings()
 	{
@@ -73,7 +72,6 @@ public class VotingSettings extends DocumentParser
 						case "api":
 						{
 							attrs = b.getAttributes();
-							_serverId = parseInteger(attrs, "id");
 							_apiKey = parseString(attrs, "key");
 							break;
 						}
@@ -174,11 +172,6 @@ public class VotingSettings extends DocumentParser
 	public String getMessage(MessageType type)
 	{
 		return _messages.get(type);
-	}
-	
-	public int getServerId()
-	{
-		return _serverId;
 	}
 	
 	public String getAPIKey()
