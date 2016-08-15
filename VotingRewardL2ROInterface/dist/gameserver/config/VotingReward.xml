@@ -2,7 +2,7 @@
 <list xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../data/xsd/VotingReward.xsd">
 	<!-- API Data can be found here http://l2topzone.com/myhome.html -->
 	<!-- Select your server and click 'Reward' -->
-	<api id="YOUR TOPZONE SERVER ID HERE" key="YOUR TOPZONE API KEY HERE" />
+	<api key="YOUR TOPZONE API KEY HERE" />
 	<voting command="getreward" interval="12hours" />
 	<nameColor r="0" g="131" b="218" /> <!-- Blue -->
 	<messages>
