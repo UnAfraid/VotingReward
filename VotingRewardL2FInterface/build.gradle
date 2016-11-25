@@ -56,7 +56,7 @@ distributions {
 				from(jar)
 				exclude('**/custom/**')
 				exclude('org.napile.primitive.jar')
-				exclude('l2ro-*.jar')
+				exclude('l2f-*.jar')
 				exclude('slf4j-*')
 			}
 			
