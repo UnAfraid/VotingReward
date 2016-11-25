@@ -1,4 +1,4 @@
-Topzone APIs
+Topzone APIs [![Build Status](https://travis-ci.org/UnAfraid/VotingReward.svg?branch=dev)](https://travis-ci.org/UnAfraid/VotingReward)
 ==============
 
 This repository contains servers side APIs for L2J based servers that are part of L2Topzone.com
