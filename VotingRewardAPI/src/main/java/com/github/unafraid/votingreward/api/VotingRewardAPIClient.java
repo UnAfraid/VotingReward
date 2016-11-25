@@ -134,12 +134,19 @@ public class VotingRewardAPIClient
 				final HttpEntity entity = response.getEntity();
 				final BufferedHttpEntity bufferedEntity = new BufferedHttpEntity(entity);
 				final String responseContent = EntityUtils.toString(bufferedEntity, StandardCharsets.UTF_8);
-				final JSONObject jsonObject = new JSONObject(responseContent);
-				if (!jsonObject.getBoolean(VotingResponces.RESPONSE_FIELD_OK))
+				try
 				{
-					throw new VotingRewardAPIException("Error at " + method.getPath(), jsonObject.getString(VotingResponces.ERROR_DESCRIPTION_FIELD), jsonObject.getInt(VotingResponces.ERROR_CODE_FIELD));
+					final JSONObject jsonObject = new JSONObject(responseContent);
+					if (!jsonObject.getBoolean(VotingResponces.RESPONSE_FIELD_OK))
+					{
+						throw new VotingRewardAPIException("Error at " + method.getPath(), jsonObject.getString(VotingResponces.ERROR_DESCRIPTION_FIELD), jsonObject.getInt(VotingResponces.ERROR_CODE_FIELD));
+					}
+					return method.deserializeResponse(jsonObject);
 				}
-				return method.deserializeResponse(jsonObject);
+				catch (Exception e)
+				{
+					throw new VotingRewardAPIException("Couldn't parse response content to json: " + responseContent);
+				}
 			}
 		}
 		catch (IOException e)
@@ -182,12 +189,19 @@ public class VotingRewardAPIClient
 					final HttpEntity entity = response.getEntity();
 					final BufferedHttpEntity bufferedEntity = new BufferedHttpEntity(entity);
 					final String responseContent = EntityUtils.toString(bufferedEntity, StandardCharsets.UTF_8);
-					final JSONObject jsonObject = new JSONObject(responseContent);
-					if (!jsonObject.getBoolean(VotingResponces.RESPONSE_FIELD_OK))
+					try
 					{
-						_callback.onError(_method, jsonObject);
+						final JSONObject jsonObject = new JSONObject(responseContent);
+						if (!jsonObject.getBoolean(VotingResponces.RESPONSE_FIELD_OK))
+						{
+							_callback.onError(_method, jsonObject);
+						}
+						_callback.onResult(_method, jsonObject);
 					}
-					_callback.onResult(_method, jsonObject);
+					catch (Exception e)
+					{
+						_callback.onException(_method, e);
+					}
 				}
 			}
 			catch (IOException e)

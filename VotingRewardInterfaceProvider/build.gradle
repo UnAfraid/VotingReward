@@ -10,6 +10,11 @@ tasks.withType(JavaCompile) {
 	options.encoding = 'UTF-8'
 }
 
+
+dependencies {
+	compile 'org.slf4j:slf4j-api:1.7.12'
+}
+
 def generalManifest = manifest {
 	attributes('Built-By': System.getProperty('user.name'),
 			'Implementation-URL': 'https://github.com/UnAfraid/VotingRewardAPI')
