@@ -15,7 +15,6 @@ dependencies {
 	compile 'org.slf4j:slf4j-api:1.7.12'
 	compile(fileTree(dir: 'libs', include: '*.jar'))
 	
-	runtime 'org.slf4j:slf4j-jdk14:1.7.12'
 	runtime project(':VotingRewardAPI')
 }
 
