@@ -121,7 +121,6 @@ public class VotingRewardAPI implements IOnVoicedCommandHandler, Runnable
 				msg = msg.replaceAll("%secs%", Integer.toString(seconds));
 				player.sendMessage(msg);
 			}
-			player.sendMessage(msg);
 		}
 	}
 	
