@@ -20,14 +20,34 @@ package custom.VotingReward;
 
 import com.github.unafraid.votingreward.VotingRewardAPI;
 
+import l2ro.gameserver.scripts.ScriptFile;
+
 /**
  * A tiny script that initializes VotingRewardAPI class
  * @author UnAfraid
  */
-public class VotingReward
+public class VotingReward implements ScriptFile
 {
-	public static void main(String[] args)
+	@Override
+	public void onLoad()
 	{
 		VotingRewardAPI.getInstance();
+	}
+	
+	@Override
+	public void onReload()
+	{
+		
+	}
+	
+	@Override
+	public void onShutdown()
+	{
+		
+	}
+	
+	public static void main(String[] args)
+	{
+		new VotingReward();
 	}
 }
