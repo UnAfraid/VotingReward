@@ -22,8 +22,8 @@ import org.junit.Test;
 
 import com.github.unafraid.votingreward.api.VotingRewardAPIClient;
 import com.github.unafraid.votingreward.api.VotingRewardAPIException;
-import com.github.unafraid.votingreward.api.objects.ServerVotingResultData;
-import com.github.unafraid.votingreward.api.objects.UserVotingResultData;
+import com.github.unafraid.votingreward.api.objects.ServerData;
+import com.github.unafraid.votingreward.api.objects.UserData;
 
 import junit.framework.TestCase;
 
@@ -38,7 +38,7 @@ public class Main extends TestCase
 	@Test
 	public void testGetUserData() throws VotingRewardAPIException
 	{
-		final UserVotingResultData data = VotingRewardAPIClient.getInstance().getVoteData(TEST_IP, API_KEY);
+		final UserData data = VotingRewardAPIClient.getInstance().getUserData(TEST_IP, API_KEY);
 		
 		// Make sure we read the object
 		assertNotNull(data);
@@ -47,19 +47,22 @@ public class Main extends TestCase
 		assertEquals(data.isVoted(), true);
 		
 		// Make sure time difference is below 30 seconds
-		assertEquals(Math.abs(System.currentTimeMillis() - data.getServerTime()) < (30 * 1000), true);
+		assertEquals(Math.abs((System.currentTimeMillis() / 1000) - data.getServerTime()) < 30, true);
 	}
 	
 	@Test
 	public void testGetServerData() throws VotingRewardAPIException
 	{
-		final ServerVotingResultData data = VotingRewardAPIClient.getInstance().getVotesData(API_KEY);
+		final ServerData data = VotingRewardAPIClient.getInstance().getServerData(API_KEY);
 		
 		// Make sure we read the object
 		assertNotNull(data);
 		
 		// Make sure properly is what's expected to be
 		assertSame(data.getTotalVotes(), 1);
+		
+		// Make sure the server rank is what's expected to be
+		assertSame(data.getServerRank(), 0);
 	}
 	
 	public static void main(String[] args)

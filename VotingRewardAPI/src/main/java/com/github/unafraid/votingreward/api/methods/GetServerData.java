@@ -18,16 +18,19 @@
  */
 package com.github.unafraid.votingreward.api.methods;
 
-import org.json.JSONObject;
+import java.io.IOException;
 
-import com.github.unafraid.votingreward.api.VotingResponces;
-import com.github.unafraid.votingreward.api.objects.ServerVotingResultData;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.github.unafraid.votingreward.api.ApiResponse;
+import com.github.unafraid.votingreward.api.VotingRewardAPIException;
+import com.github.unafraid.votingreward.api.objects.ServerData;
 
 /**
  * @author UnAfraid
  */
-public class GetServerData implements IVotingMethod<ServerVotingResultData>
+public class GetServerData extends AbstractVotingMethod<ServerData>
 {
+	private static final long serialVersionUID = 8749483424991211147L;
 	private static final String PATH = "getServerData";
 	
 	public GetServerData()
@@ -41,14 +44,22 @@ public class GetServerData implements IVotingMethod<ServerVotingResultData>
 	}
 	
 	@Override
-	public ServerVotingResultData deserializeResponse(JSONObject answer)
+	public ServerData deserializeResponse(String answer) throws VotingRewardAPIException
 	{
-		return new ServerVotingResultData(answer.getJSONObject(VotingResponces.RESPONSE_FIELD_RESULT));
-	}
-	
-	@Override
-	public JSONObject toJson()
-	{
-		return new JSONObject();
+		try
+		{
+			final ApiResponse<ServerData> result = OBJECT_MAPPER.readValue(answer, new TypeReference<ApiResponse<ServerData>>()
+			{
+			});
+			if (result.getOk())
+			{
+				return result.getResult();
+			}
+			throw new VotingRewardAPIException("Error getting result", answer, result.getErrorCode());
+		}
+		catch (IOException e2)
+		{
+			throw new VotingRewardAPIException("Unable to deserialize response", e2);
+		}
 	}
 }
