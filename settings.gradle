@@ -1,5 +1,6 @@
 include('VotingRewardAPI')
 include('VotingRewardInterfaceProvider')
 include('VotingRewardL2jInterface')
+include('VotingRewardL2jUnityInterface')
 include('VotingRewardL2ROInterface')
 include('VotingRewardL2FInterface')

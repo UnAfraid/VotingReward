@@ -1,0 +1,72 @@
+apply plugin: 'java'
+apply plugin: 'distribution'
+
+defaultTasks('distZip')
+
+sourceCompatibility = JavaVersion.VERSION_1_7
+targetCompatibility = JavaVersion.VERSION_1_7
+
+tasks.withType(JavaCompile) {
+	options.encoding = 'UTF-8'
+}
+
+dependencies {
+	compile project(':VotingRewardInterfaceProvider')
+	compile project(':VotingRewardAPI')
+	compile(group: 'io.netty', name: 'netty-all', version: '4.1.4.Final')
+	compile(fileTree(dir: 'libs', include: '*.jar'))
+}
+
+compileJava {
+    //enable compilation in a separate daemon process
+    options.fork = true
+
+    //enable incremental compilation
+    options.incremental = true
+    
+    // Exclude custom from being compiled
+    exclude('**/custom/**')
+}
+
+
+
+def generalManifest = manifest {
+	attributes(
+		'Built-By': System.getProperty('user.name'),
+		'Implementation-URL': 'https://github.com/UnAfraid/VotingRewardAPI')
+}
+
+jar {
+	archiveName = 'VotingRewardL2JUnityInterface.jar'
+	exclude('**/custom/**')
+	manifest {
+		from(generalManifest)
+	}
+}
+
+
+distributions {
+	main {
+		contents {
+			from('dist')
+			into('l2junity-gameserver/dist/libs') {
+				from(configurations.runtime)
+				from(jar)
+				exclude('**/custom/**')
+				exclude('l2jserver.jar')
+				exclude('l2junity-*.jar')
+				exclude('netty-*')
+				exclude('slf4j-*')
+			}
+			
+			into('l2junity-gameserver/dist/game/data/scripts') {
+				from('src/main/java') {
+					include('**/custom/**')
+					exclude('**/com/**');
+				}
+			}
+		}
+	}
+}
+
+

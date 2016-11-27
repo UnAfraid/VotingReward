@@ -1,18 +1,18 @@
 /*
  * Copyright (C) 2014-2015 Vote Rewarding System
- * 
+ *
  * This file is part of Vote Rewarding System.
- * 
+ *
  * Vote Rewarding System is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * Vote Rewarding System is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
@@ -36,15 +36,15 @@ public class VotingRewardAPI implements IOnVoicedCommandHandler, Runnable
 	{
 		VotingSettings.getInstance().getVotingCommand(),
 	};
-	
+
 	private final Queue<IPlayerInstance> _tasks = new ConcurrentLinkedQueue<>();
-	
+
 	protected VotingRewardAPI()
 	{
 		VotingRewardInterfaceProvider.getInterface().registerHandler(this);
 		Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(this, 1, 1, TimeUnit.SECONDS);
 	}
-	
+
 	@Override
 	public boolean useVoicedCommand(String command, IPlayerInstance player, String params)
 	{
@@ -54,9 +54,9 @@ public class VotingRewardAPI implements IOnVoicedCommandHandler, Runnable
 			player.sendMessage("Reloaded VotingReward.xml");
 			return true;
 		}
-		
+
 		final long timeRemaining = VotingRewardCache.getInstance().getLastVotedTime(player);
-		
+
 		// Make sure player haven't received reward already!
 		if (timeRemaining > 0)
 		{
@@ -64,7 +64,8 @@ public class VotingRewardAPI implements IOnVoicedCommandHandler, Runnable
 			VotingRewardInterfaceProvider.getInterface().onInReuse(player, timeRemaining);
 			return false;
 		}
-		
+
+		// 
 		// Add rewarding task
 		if (_tasks.contains(player))
 		{
@@ -75,7 +76,7 @@ public class VotingRewardAPI implements IOnVoicedCommandHandler, Runnable
 		_tasks.offer(player);
 		return true;
 	}
-	
+
 	@Override
 	public void run()
 	{
@@ -83,7 +84,7 @@ public class VotingRewardAPI implements IOnVoicedCommandHandler, Runnable
 		{
 			return;
 		}
-		
+
 		while (!_tasks.isEmpty())
 		{
 			final IPlayerInstance player = _tasks.poll();
@@ -91,7 +92,7 @@ public class VotingRewardAPI implements IOnVoicedCommandHandler, Runnable
 			{
 				break;
 			}
-			
+
 			try
 			{
 				new VotingRewardTask(player);
@@ -103,7 +104,7 @@ public class VotingRewardAPI implements IOnVoicedCommandHandler, Runnable
 			}
 		}
 	}
-	
+
 	private static void sendReEnterMessage(long time, IPlayerInstance player)
 	{
 		if (time > System.currentTimeMillis())
@@ -112,7 +113,7 @@ public class VotingRewardAPI implements IOnVoicedCommandHandler, Runnable
 			final int hours = (int) (remainingTime / 3600);
 			final int minutes = (int) ((remainingTime % 3600) / 60);
 			final int seconds = (int) ((remainingTime % 3600) % 60);
-			
+
 			String msg = VotingSettings.getInstance().getMessage(MessageType.ON_REUSE);
 			if (msg != null)
 			{
@@ -123,18 +124,18 @@ public class VotingRewardAPI implements IOnVoicedCommandHandler, Runnable
 			}
 		}
 	}
-	
+
 	@Override
 	public String[] getVoicedCommandList()
 	{
 		return COMMANDS;
 	}
-	
+
 	public static final VotingRewardAPI getInstance()
 	{
 		return SingletonHolder.INSTANCE;
 	}
-	
+
 	private static class SingletonHolder
 	{
 		protected static final VotingRewardAPI INSTANCE = new VotingRewardAPI();
