@@ -18,197 +18,132 @@
  */
 package com.github.unafraid.votingreward.api;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.Serializable;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.concurrent.TimeUnit;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Objects;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.conn.ssl.NoopHostnameVerifier;
-import org.apache.http.entity.BufferedHttpEntity;
-import org.apache.http.entity.ContentType;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.util.EntityUtils;
-import org.json.JSONObject;
-
-import com.github.unafraid.votingreward.VotingRewardInterfaceProvider;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.unafraid.votingreward.api.methods.AbstractVotingMethod;
 import com.github.unafraid.votingreward.api.methods.GetServerData;
 import com.github.unafraid.votingreward.api.methods.GetUserData;
-import com.github.unafraid.votingreward.api.methods.IVotingMethod;
-import com.github.unafraid.votingreward.api.objects.ServerVotingResultData;
-import com.github.unafraid.votingreward.api.objects.UserVotingResultData;
+import com.github.unafraid.votingreward.api.objects.ServerData;
+import com.github.unafraid.votingreward.api.objects.UserData;
 
 /**
  * @author UnAfraid
  */
 public class VotingRewardAPIClient
 {
-	private static final String BASEURL = "http://api.l2topzone.com/v1/server_%s/";
+	private static final String BASEURL = "https://api.l2topzone.com/v1/server_%s/";
 	private static final String USER_AGENT = "L2TopZone";
+	private static final String CONTENT_TYPE = "application/json";
+	private static final String HTTP_METHOD = "POST";
 	private static final int SOCKET_TIMEOUT = 30 * 1000;
+	private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 	
-	final CloseableHttpClient _client;
-	final RequestConfig _requestConfig;
-	
-	public VotingRewardAPIClient()
-	{
-		//@formatter:off
-        _client = HttpClientBuilder.create()
-            .setSSLHostnameVerifier(new NoopHostnameVerifier())
-            .setConnectionTimeToLive(70, TimeUnit.SECONDS)
-            .setMaxConnTotal(100)
-            .build();
-
-	    final RequestConfig.Builder configBuilder = RequestConfig.copy(RequestConfig.custom().build());
-	    _requestConfig = configBuilder.setSocketTimeout(SOCKET_TIMEOUT)
-            .setConnectTimeout(SOCKET_TIMEOUT)
-            .setConnectionRequestTimeout(SOCKET_TIMEOUT)
-            .build();
-		//@formatter:on
-	}
-	
-	public final UserVotingResultData getVoteData(String ip, String apiKey) throws VotingRewardAPIException
+	public final UserData getUserData(String ip, String apiKey) throws VotingRewardAPIException
 	{
 		final GetUserData getVoteData = new GetUserData(ip);
 		return sendApiMethod(getVoteData, apiKey);
 	}
 	
-	public final ServerVotingResultData getVotesData(String apiKey) throws VotingRewardAPIException
+	public final ServerData getServerData(String apiKey) throws VotingRewardAPIException
 	{
 		final GetServerData getVoteData = new GetServerData();
 		return sendApiMethod(getVoteData, apiKey);
 	}
 	
-	public final void getVoteDataAsync(GetUserData userData, IVotingCallback<UserVotingResultData> sentCallback, String apiKey) throws VotingRewardAPIException
-	{
-		if (userData == null)
-		{
-			throw new VotingRewardAPIException("Parameter sendMessage can not be null");
-		}
-		
-		if (sentCallback == null)
-		{
-			throw new VotingRewardAPIException("Parameter sentCallback can not be null");
-		}
-		
-		sendApiMethodAsync(userData, sentCallback, apiKey);
-	}
-	
-	public final void getVotesDataAsync(GetServerData serverData, IVotingCallback<ServerVotingResultData> sentCallback, String apiKey) throws VotingRewardAPIException
-	{
-		if (serverData == null)
-		{
-			throw new VotingRewardAPIException("Parameter sendMessage can not be null");
-		}
-		
-		if (sentCallback == null)
-		{
-			throw new VotingRewardAPIException("Parameter sentCallback can not be null");
-		}
-		
-		sendApiMethodAsync(serverData, sentCallback, apiKey);
-	}
-	
-	<T extends Serializable> String getUrl(IVotingMethod<T> method, String apiKey)
-	{
-		return String.format(BASEURL + method.getPath(), apiKey);
-	}
-	
-	private <T extends Serializable> T sendApiMethod(IVotingMethod<T> method, String apiKey) throws VotingRewardAPIException
+	private <T extends Serializable> T sendApiMethod(AbstractVotingMethod<T> method, String apiKey) throws VotingRewardAPIException
 	{
 		try
 		{
-			final String url = getUrl(method, apiKey);
-			final HttpPost post = new HttpPost(url);
-			post.setConfig(_requestConfig);
-			post.addHeader("charset", StandardCharsets.UTF_8.name());
-			post.addHeader("User-Agent", USER_AGENT);
-			post.setEntity(new StringEntity(method.toJson().toString(), ContentType.APPLICATION_JSON));
-			try (CloseableHttpResponse response = _client.execute(post))
+			Objects.requireNonNull(method, "method cannot be null!");
+			Objects.requireNonNull(apiKey, "apiKey cannot be null!");
+			
+			final Map<String, String> headers = new HashMap<>();
+			headers.put("Content-Type", CONTENT_TYPE);
+			headers.put("User-Agent", USER_AGENT);
+			headers.put("Charset", StandardCharsets.UTF_8.name());
+			
+			final URL urlAddress = new URL(getUrl(method, apiKey));
+			final HttpURLConnection connection = (HttpURLConnection) urlAddress.openConnection();
+			
+			// Set timeouts
+			connection.setConnectTimeout(SOCKET_TIMEOUT);
+			connection.setReadTimeout(SOCKET_TIMEOUT);
+			
+			// Set POST type
+			connection.setRequestMethod(HTTP_METHOD);
+			
+			// Set headers
+			for (Entry<String, String> entry : headers.entrySet())
 			{
-				final HttpEntity entity = response.getEntity();
-				final BufferedHttpEntity bufferedEntity = new BufferedHttpEntity(entity);
-				final String responseContent = EntityUtils.toString(bufferedEntity, StandardCharsets.UTF_8);
-				try
-				{
-					final JSONObject jsonObject = new JSONObject(responseContent);
-					if (!jsonObject.getBoolean(VotingResponces.RESPONSE_FIELD_OK))
-					{
-						throw new VotingRewardAPIException("Error at " + method.getPath(), jsonObject.getString(VotingResponces.ERROR_DESCRIPTION_FIELD), jsonObject.getInt(VotingResponces.ERROR_CODE_FIELD));
-					}
-					return method.deserializeResponse(jsonObject);
-				}
-				catch (Exception e)
-				{
-					throw new VotingRewardAPIException("Couldn't parse response content to json: " + responseContent);
-				}
+				connection.setRequestProperty(entry.getKey(), entry.getValue());
+			}
+			
+			// Set output
+			connection.setDoOutput(true);
+			
+			// Write output
+			try (final OutputStream os = connection.getOutputStream();
+				final BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, StandardCharsets.UTF_8.name())))
+			{
+				writer.write(OBJECT_MAPPER.writeValueAsString(method));
+			}
+			
+			connection.connect();
+			
+			// Read input
+			String responseContent = null;
+			try
+			{
+				responseContent = readStream(connection.getInputStream());
+				return method.deserializeResponse(responseContent);
+			}
+			catch (Exception e)
+			{
+				throw new VotingRewardAPIException("Couldn't parse response content to json: " + responseContent, e);
+			}
+			finally
+			{
+				connection.disconnect();
 			}
 		}
-		catch (IOException e)
+		catch (Exception e)
 		{
 			throw new VotingRewardAPIException("Unable to execute " + method.getPath() + " method", e);
 		}
 	}
 	
-	private <T extends Serializable, Method extends IVotingMethod<T>, Callback extends IVotingCallback<T>> void sendApiMethodAsync(Method method, Callback callback, String apiKey)
+	private String readStream(InputStream input) throws IOException
 	{
-		VotingRewardInterfaceProvider.getInterface().executeTask(new AsyncTask<>(method, callback, apiKey));
+		try (BufferedReader reader = new BufferedReader(new InputStreamReader(input)))
+		{
+			final StringBuilder result = new StringBuilder();
+			String line;
+			while ((line = reader.readLine()) != null)
+			{
+				result.append(line).append(System.lineSeparator());
+			}
+			return result.toString();
+		}
 	}
 	
-	class AsyncTask<T extends Serializable> implements Runnable
+	<T extends Serializable> String getUrl(AbstractVotingMethod<T> method, String apiKey)
 	{
-		private final IVotingMethod<T> _method;
-		private final IVotingCallback<T> _callback;
-		private final String _apiKey;
-		
-		public AsyncTask(IVotingMethod<T> method, IVotingCallback<T> callback, String apiKey)
-		{
-			_method = method;
-			_callback = callback;
-			_apiKey = apiKey;
-		}
-		
-		@Override
-		public void run()
-		{
-			try
-			{
-				final String url = getUrl(_method, _apiKey);
-				final HttpPost post = new HttpPost(url);
-				post.setConfig(_requestConfig);
-				post.addHeader("charset", StandardCharsets.UTF_8.name());
-				post.addHeader("User-Agent", USER_AGENT);
-				post.setEntity(new StringEntity(_method.toJson().toString(), ContentType.APPLICATION_JSON));
-				try (CloseableHttpResponse response = _client.execute(post))
-				{
-					final HttpEntity entity = response.getEntity();
-					final BufferedHttpEntity bufferedEntity = new BufferedHttpEntity(entity);
-					final String responseContent = EntityUtils.toString(bufferedEntity, StandardCharsets.UTF_8);
-					try
-					{
-						final JSONObject jsonObject = new JSONObject(responseContent);
-						if (!jsonObject.getBoolean(VotingResponces.RESPONSE_FIELD_OK))
-						{
-							_callback.onError(_method, jsonObject);
-						}
-						_callback.onResult(_method, jsonObject);
-					}
-					catch (Exception e)
-					{
-						_callback.onException(_method, e);
-					}
-				}
-			}
-			catch (IOException e)
-			{
-				_callback.onException(_method, e);
-			}
-		}
+		return String.format(BASEURL + method.getPath(), apiKey);
 	}
 	
 	public static final VotingRewardAPIClient getInstance()

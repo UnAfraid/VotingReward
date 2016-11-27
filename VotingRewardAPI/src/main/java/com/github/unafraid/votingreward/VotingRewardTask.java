@@ -20,7 +20,7 @@ package com.github.unafraid.votingreward;
 
 import com.github.unafraid.votingreward.VotingSettings.MessageType;
 import com.github.unafraid.votingreward.api.VotingRewardAPIClient;
-import com.github.unafraid.votingreward.api.objects.UserVotingResultData;
+import com.github.unafraid.votingreward.api.objects.UserData;
 import com.github.unafraid.votingreward.interfaceprovider.api.IPlayerInstance;
 import com.github.unafraid.votingreward.model.RewardItem;
 
@@ -35,7 +35,7 @@ public class VotingRewardTask
 		{
 			final long timeRemaining = VotingRewardCache.getInstance().getLastVotedTime(player);
 			final String apiKey = VotingSettings.getInstance().getAPIKey();
-			final UserVotingResultData data = VotingRewardAPIClient.getInstance().getVoteData(player.getIPAddress(), apiKey);
+			final UserData data = VotingRewardAPIClient.getInstance().getUserData(player.getIPAddress(), apiKey);
 			if ((timeRemaining <= 0) && data.isVoted())
 			{
 				// Give him reward

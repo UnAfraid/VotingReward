@@ -18,19 +18,24 @@
  */
 package com.github.unafraid.votingreward.api.methods;
 
-import org.json.JSONObject;
+import java.io.IOException;
 
-import com.github.unafraid.votingreward.api.VotingResponces;
-import com.github.unafraid.votingreward.api.objects.UserVotingResultData;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.github.unafraid.votingreward.api.ApiResponse;
+import com.github.unafraid.votingreward.api.VotingRewardAPIException;
+import com.github.unafraid.votingreward.api.objects.UserData;
 
 /**
  * @author UnAfraid
  */
-public class GetUserData implements IVotingMethod<UserVotingResultData>
+public class GetUserData extends AbstractVotingMethod<UserData>
 {
+	private static final long serialVersionUID = -8002314184042420217L;
 	private static final String PATH = "getUserData";
 	private static final String CLIENT_IP_FIELD = "ip";
 	
+	@JsonProperty(CLIENT_IP_FIELD)
 	private final String _ip;
 	
 	public GetUserData(String ip)
@@ -45,16 +50,22 @@ public class GetUserData implements IVotingMethod<UserVotingResultData>
 	}
 	
 	@Override
-	public UserVotingResultData deserializeResponse(JSONObject answer)
+	public UserData deserializeResponse(String answer) throws VotingRewardAPIException
 	{
-		return new UserVotingResultData(answer.getJSONObject(VotingResponces.RESPONSE_FIELD_RESULT));
-	}
-	
-	@Override
-	public JSONObject toJson()
-	{
-		final JSONObject object = new JSONObject();
-		object.put(CLIENT_IP_FIELD, _ip);
-		return object;
+		try
+		{
+			final ApiResponse<UserData> result = OBJECT_MAPPER.readValue(answer, new TypeReference<ApiResponse<UserData>>()
+			{
+			});
+			if (result.getOk())
+			{
+				return result.getResult();
+			}
+			throw new VotingRewardAPIException("Error getting result", answer, result.getErrorCode());
+		}
+		catch (IOException e2)
+		{
+			throw new VotingRewardAPIException("Unable to deserialize response", e2);
+		}
 	}
 }
