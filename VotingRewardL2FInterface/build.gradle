@@ -36,7 +36,7 @@ def generalManifest = manifest {
 }
 
 jar {
-	archiveName = 'VotingRewardL2ROInterface.jar'
+	archiveName = 'VotingRewardL2FInterface.jar'
 	exclude('**/custom/**')
 	manifest {
 		from(generalManifest)
