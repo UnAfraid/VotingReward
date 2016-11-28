@@ -33,10 +33,6 @@ public class GetServerData extends AbstractVotingMethod<ServerData>
 	private static final long serialVersionUID = 8749483424991211147L;
 	private static final String PATH = "getServerData";
 	
-	public GetServerData()
-	{
-	}
-	
 	@Override
 	public String getPath()
 	{
@@ -44,22 +40,15 @@ public class GetServerData extends AbstractVotingMethod<ServerData>
 	}
 	
 	@Override
-	public ServerData deserializeResponse(String answer) throws VotingRewardAPIException
+	public ServerData deserializeResponse(String answer) throws IOException, VotingRewardAPIException
 	{
-		try
+		final ApiResponse<ServerData> response = OBJECT_MAPPER.readValue(answer, new TypeReference<ApiResponse<ServerData>>()
 		{
-			final ApiResponse<ServerData> result = OBJECT_MAPPER.readValue(answer, new TypeReference<ApiResponse<ServerData>>()
-			{
-			});
-			if (result.getOk())
-			{
-				return result.getResult();
-			}
-			throw new VotingRewardAPIException("Error getting result", answer, result.getErrorCode());
-		}
-		catch (IOException e2)
+		});
+		if (response.isOkay())
 		{
-			throw new VotingRewardAPIException("Unable to deserialize response", e2);
+			return response.getResult();
 		}
+		throw new VotingRewardAPIException("Error getting result", answer, response.getErrorCode());
 	}
 }

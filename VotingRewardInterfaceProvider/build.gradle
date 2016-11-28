@@ -62,11 +62,11 @@ uploadArchives {
 			beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
 
 			repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2") {
-		        authentication(userName: getRepositoryUsername(), password: getRepositoryPassword())
+				authentication(userName: getRepositoryUsername(), password: getRepositoryPassword())
 			}
 
 			snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots") {
-		        authentication(userName: getRepositoryUsername(), password: getRepositoryPassword())
+				authentication(userName: getRepositoryUsername(), password: getRepositoryPassword())
 			}
 
 			pom.project {
@@ -96,10 +96,10 @@ uploadArchives {
 						email 'unafraid89@gmail.com'
 						organization 'L2JUnity'
 						organizationUrl 'https://l2junity.org'
-		              	roles {
+						roles {
 							role 'architect'
 							role 'developer'
-                		}
+						}
 					}
 				}
 			}

@@ -18,6 +18,7 @@
  */
 package com.github.unafraid.votingreward.api.methods;
 
+import java.io.IOException;
 import java.io.Serializable;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -45,7 +46,8 @@ public abstract class AbstractVotingMethod<T extends Serializable> implements Se
 	 * Deserialize a json answer to the response type to a method
 	 * @param answer Json answer received
 	 * @return Answer for the method
+	 * @throws IOException
 	 * @throws VotingRewardAPIException
 	 */
-	public abstract T deserializeResponse(String answer) throws VotingRewardAPIException;
+	public abstract T deserializeResponse(String answer) throws IOException, VotingRewardAPIException;
 }

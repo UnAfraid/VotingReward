@@ -39,42 +39,43 @@ public class ApiResponse<T> implements Serializable
 	private static final String RESULT_FIELD = "result";
 	
 	@JsonProperty(OK_FIELD)
-	private Boolean ok;
+	private Boolean _ok;
 	@JsonProperty(ERROR_CODE_FIELD)
-	private Integer errorCode;
+	private Integer _errorCode;
 	@JsonProperty(DESCRIPTION_CODE_FIELD)
-	private String errorDescription;
+	private String _errorDescription;
 	@JsonProperty(RESULT_FIELD)
-	private T result;
+	private T _result;
 	
-	public Boolean getOk()
+	public Boolean isOkay()
 	{
-		return ok;
+		return _ok;
 	}
 	
 	public Integer getErrorCode()
 	{
-		return errorCode;
+		return _errorCode;
 	}
 	
 	public String getErrorDescription()
 	{
-		return errorDescription;
+		return _errorDescription;
 	}
 	
 	public T getResult()
 	{
-		return result;
+		return _result;
 	}
 	
 	@Override
 	public String toString()
 	{
-		if (ok)
-		{
-			return "ApiResponse{" + "ok=" + ok + ", result=" + result + '}';
-		}
-		return "ApiResponse{" + "ok=" + ok + ", errorCode=" + errorCode + ", errorDescription='" + errorDescription + '\'' + "" + '}';
+		//@formatter:off
+		return _ok ? 
+			"ApiResponse{ok=" + _ok + ", result=" + _result + '}' 
+		: 
+			"ApiResponse{ok=" + _ok + ", errorCode=" + _errorCode + ", errorDescription='" + _errorDescription + '\'' + '}';
+		//@formatter:on
 	}
 	
 }
