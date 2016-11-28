@@ -50,22 +50,15 @@ public class GetUserData extends AbstractVotingMethod<UserData>
 	}
 	
 	@Override
-	public UserData deserializeResponse(String answer) throws VotingRewardAPIException
+	public UserData deserializeResponse(String answer) throws IOException, VotingRewardAPIException
 	{
-		try
+		final ApiResponse<UserData> response = OBJECT_MAPPER.readValue(answer, new TypeReference<ApiResponse<UserData>>()
 		{
-			final ApiResponse<UserData> result = OBJECT_MAPPER.readValue(answer, new TypeReference<ApiResponse<UserData>>()
-			{
-			});
-			if (result.getOk())
-			{
-				return result.getResult();
-			}
-			throw new VotingRewardAPIException("Error getting result", answer, result.getErrorCode());
-		}
-		catch (IOException e2)
+		});
+		if (response.isOkay())
 		{
-			throw new VotingRewardAPIException("Unable to deserialize response", e2);
+			return response.getResult();
 		}
+		throw new VotingRewardAPIException("Error getting result", answer, response.getErrorCode());
 	}
 }
