@@ -1,25 +1,24 @@
 apply plugin: 'java'
-apply plugin: 'distribution'
-
-defaultTasks('distZip')
+apply plugin: 'maven'
+apply plugin: 'signing'
 
 sourceCompatibility = JavaVersion.VERSION_1_7
 targetCompatibility = JavaVersion.VERSION_1_7
 
-tasks.withType(JavaCompile) {
-	options.encoding = 'UTF-8'
-}
+group "com.github.unafraid"
+archivesBaseName = "voting-reward-api"
+version = "1.0.1"
 
 dependencies {
 	compile project(':VotingRewardInterfaceProvider')
 	compile (group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.8.5')
 	compile (group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.8.5')
-	testCompile group: 'junit', name: 'junit', version: '4.+'
+	testCompile group: 'junit', name: 'junit', version: '4.12'
 }
 
 def generalManifest = manifest {
 	attributes('Built-By': System.getProperty('user.name'),
-			'Implementation-URL': 'https://github.com/UnAfraid/VotingRewardAPI')
+		'Implementation-URL': 'https://github.com/UnAfraid/VotingReward')
 }
 
 
@@ -30,17 +29,84 @@ jar {
 	}
 }
 
+tasks.withType(JavaCompile) {
+	options.encoding = 'UTF-8'
+}
 
-distributions {
-	main {
-		contents {
-			from('dist')
-			into('libs') {
-				from(configurations.runtime)
-				from(jar)
+tasks.withType(Javadoc) {
+	options.addStringOption('Xdoclint:none', '-quiet')
+}
+
+task javadocJar(type: Jar) {
+	classifier = 'javadoc'
+	from javadoc
+}
+
+task sourcesJar(type: Jar) {
+	classifier = 'sources'
+	from sourceSets.main.allSource
+}
+
+tasks.withType(Javadoc) {
+	options.addStringOption('Xdoclint:none', '-quiet')
+}
+
+artifacts {
+	archives javadocJar, sourcesJar
+}
+
+signing {
+	required { gradle.taskGraph.hasTask("uploadArchives") }
+	sign configurations.archives
+}
+
+uploadArchives {
+	repositories {
+		mavenDeployer {
+			beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+			repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2") {
+		        authentication(userName: getRepositoryUsername(), password: getRepositoryPassword())
+			}
+
+			snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots") {
+		        authentication(userName: getRepositoryUsername(), password: getRepositoryPassword())
+			}
+
+			pom.project {
+				name 'VotingRewardAPI'
+				packaging 'jar'
+				description 'Voting Reward API for https://l2topzone.com'
+				url 'https://github.com/UnAfraid/VotingReward'
+
+				scm {
+					connection 'scm:git:git@github.com:UnAfraid/VotingReward.git'
+					developerConnection 'scm:git:git@github.com:UnAfraid/VotingReward.git'
+					url 'git@github.com:UnAfraid/VotingReward.git'
+				}
+
+				licenses {
+					license {
+						name 'GPLv3 License'
+						url 'https://opensource.org/licenses/GPL-3.0'
+						distribution 'repo'
+					}
+				}
+
+				developers {
+					developer {
+						id 'UnAfraid'
+						name 'Rumen Nikiforov'
+						email 'unafraid89@gmail.com'
+						organization 'L2JUnity'
+						organizationUrl 'https://l2junity.org'
+		              	roles {
+							role 'architect'
+							role 'developer'
+                		}
+					}
+				}
 			}
 		}
 	}
 }
-
-

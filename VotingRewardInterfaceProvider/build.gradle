@@ -1,15 +1,13 @@
 apply plugin: 'java'
-apply plugin: 'distribution'
-
-defaultTasks('distZip')
+apply plugin: 'maven'
+apply plugin: 'signing'
 
 sourceCompatibility = JavaVersion.VERSION_1_7
 targetCompatibility = JavaVersion.VERSION_1_7
 
-tasks.withType(JavaCompile) {
-	options.encoding = 'UTF-8'
-}
-
+group "com.github.unafraid"
+archivesBaseName = "voting-reward-provider"
+version = "1.0.1"
 
 dependencies {
 	compile 'org.slf4j:slf4j-api:1.7.12'
@@ -20,7 +18,6 @@ def generalManifest = manifest {
 			'Implementation-URL': 'https://github.com/UnAfraid/VotingRewardAPI')
 }
 
-
 jar {
 	archiveName = 'VotingRewardInterfaceProvider.jar'
 	manifest {
@@ -28,17 +25,84 @@ jar {
 	}
 }
 
+tasks.withType(JavaCompile) {
+	options.encoding = 'UTF-8'
+}
 
-distributions {
-	main {
-		contents {
-			from('dist')
-			into('libs') {
-				from(configurations.runtime)
-				from(jar)
+tasks.withType(Javadoc) {
+	options.addStringOption('Xdoclint:none', '-quiet')
+}
+
+task javadocJar(type: Jar) {
+	classifier = 'javadoc'
+	from javadoc
+}
+
+task sourcesJar(type: Jar) {
+	classifier = 'sources'
+	from sourceSets.main.allSource
+}
+
+tasks.withType(Javadoc) {
+	options.addStringOption('Xdoclint:none', '-quiet')
+}
+
+artifacts {
+	archives javadocJar, sourcesJar
+}
+
+signing {
+	required { gradle.taskGraph.hasTask("uploadArchives") }
+	sign configurations.archives
+}
+
+uploadArchives {
+	repositories {
+		mavenDeployer {
+			beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+			repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2") {
+		        authentication(userName: getRepositoryUsername(), password: getRepositoryPassword())
+			}
+
+			snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots") {
+		        authentication(userName: getRepositoryUsername(), password: getRepositoryPassword())
+			}
+
+			pom.project {
+				name 'VotingRewardAPI'
+				packaging 'jar'
+				description 'Voting Reward API for https://l2topzone.com'
+				url 'https://github.com/UnAfraid/VotingReward'
+
+				scm {
+					connection 'scm:git:git@github.com:UnAfraid/VotingReward.git'
+					developerConnection 'scm:git:git@github.com:UnAfraid/VotingReward.git'
+					url 'git@github.com:UnAfraid/VotingReward.git'
+				}
+
+				licenses {
+					license {
+						name 'GPLv3 License'
+						url 'https://opensource.org/licenses/GPL-3.0'
+						distribution 'repo'
+					}
+				}
+
+				developers {
+					developer {
+						id 'UnAfraid'
+						name 'Rumen Nikiforov'
+						email 'unafraid89@gmail.com'
+						organization 'L2JUnity'
+						organizationUrl 'https://l2junity.org'
+		              	roles {
+							role 'architect'
+							role 'developer'
+                		}
+					}
+				}
 			}
 		}
 	}
 }
-
-

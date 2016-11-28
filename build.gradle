@@ -31,3 +31,12 @@ subprojects {
 task wrapper(type: Wrapper) {
 	gradleVersion = '2.7'
 }
+
+
+def getRepositoryUsername() {
+	return hasProperty('ossrhUsername') ? ossrhUsername : ""
+}
+
+def getRepositoryPassword() {
+	return hasProperty('ossrhPassword') ? ossrhPassword : ""
+}
