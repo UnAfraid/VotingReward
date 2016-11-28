@@ -18,7 +18,7 @@
  */
 package com.github.unafraid.votingreward.model;
 
-import com.github.unafraid.votingreward.VotingRewardInterfaceProvider;
+import com.github.unafraid.votingreward.VotingRewardInterface;
 import com.github.unafraid.votingreward.interfaceprovider.model.RewardItemHolder;
 
 /**
@@ -49,7 +49,7 @@ public class RewardItem extends RewardItemHolder
 	@Override
 	public long getCount()
 	{
-		return VotingRewardInterfaceProvider.getInterface().getRandom(_min, _max);
+		return VotingRewardInterface.getInstance().getRandom(_min, _max);
 	}
 	
 	public int getMin()

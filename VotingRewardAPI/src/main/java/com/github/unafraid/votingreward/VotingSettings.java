@@ -21,7 +21,6 @@ package com.github.unafraid.votingreward;
 import java.awt.Color;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
 
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -54,54 +53,54 @@ public class VotingSettings extends DocumentParser
 	{
 		_droplist.getGroups().clear();
 		parseDatapackFile("config/VotingReward.xml");
-		_log.log(Level.INFO, getClass().getSimpleName() + ": Loaded " + _messages.size() + " messages, " + _droplist.getGroups().size() + " drops!");
+		VotingRewardInterface.getInstance().logInfo(getClass().getSimpleName() + ": Loaded " + _messages.size() + " messages, " + _droplist.getGroups().size() + " drops!");
 	}
 	
 	@Override
 	protected void parseDocument()
 	{
 		NamedNodeMap attrs;
-		for (Node n = getCurrentDocument().getFirstChild(); n != null; n = n.getNextSibling())
+		for (Node docNode = getCurrentDocument().getFirstChild(); docNode != null; docNode = docNode.getNextSibling())
 		{
-			if ("list".equalsIgnoreCase(n.getNodeName()))
+			if ("list".equalsIgnoreCase(docNode.getNodeName()))
 			{
-				for (Node b = n.getFirstChild(); b != null; b = b.getNextSibling())
+				for (Node listNode = docNode.getFirstChild(); listNode != null; listNode = listNode.getNextSibling())
 				{
-					switch (b.getNodeName())
+					switch (listNode.getNodeName())
 					{
 						case "api":
 						{
-							attrs = b.getAttributes();
+							attrs = listNode.getAttributes();
 							_apiKey = parseString(attrs, "key");
 							break;
 						}
 						case "voting":
 						{
-							attrs = b.getAttributes();
+							attrs = listNode.getAttributes();
 							_votingCommand = parseString(attrs, "command", "getreward");
 							_votingInterval = VotingUtil.parseTimeString(parseString(attrs, "interval", "12hours"));
 							break;
 						}
 						case "nameColor":
 						{
-							attrs = b.getAttributes();
-							int R = parseInteger(attrs, "r");
-							int G = parseInteger(attrs, "g");
-							int B = parseInteger(attrs, "b");
-							_color = new Color(R, G, B);
+							attrs = listNode.getAttributes();
+							int r = parseInteger(attrs, "r");
+							int g = parseInteger(attrs, "g");
+							int b = parseInteger(attrs, "b");
+							_color = new Color(r, g, b);
 							break;
 						}
 						case "messages":
 						{
-							for (Node a = b.getFirstChild(); a != null; a = a.getNextSibling())
+							for (Node messagesNode = listNode.getFirstChild(); messagesNode != null; messagesNode = messagesNode.getNextSibling())
 							{
-								switch (a.getNodeName())
+								switch (messagesNode.getNodeName())
 								{
 									case "message":
 									{
-										attrs = a.getAttributes();
+										attrs = messagesNode.getAttributes();
 										final MessageType type = parseEnum(attrs, MessageType.class, "type");
-										final String content = a.getTextContent();
+										final String content = messagesNode.getTextContent();
 										_messages.put(type, content);
 										break;
 									}
@@ -111,16 +110,16 @@ public class VotingSettings extends DocumentParser
 						}
 						case "rewards":
 						{
-							for (Node a = b.getFirstChild(); a != null; a = a.getNextSibling())
+							for (Node rewardsNode = listNode.getFirstChild(); rewardsNode != null; rewardsNode = rewardsNode.getNextSibling())
 							{
-								switch (a.getNodeName())
+								switch (rewardsNode.getNodeName())
 								{
 									case "group":
 									{
-										attrs = a.getAttributes();
+										attrs = rewardsNode.getAttributes();
 										final float groupChance = parseFloat(attrs, "chance");
 										final RewardGroup group = new RewardGroup(groupChance);
-										for (Node z = a.getFirstChild(); z != null; z = z.getNextSibling())
+										for (Node z = rewardsNode.getFirstChild(); z != null; z = z.getNextSibling())
 										{
 											switch (z.getNodeName())
 											{

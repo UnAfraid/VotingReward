@@ -26,7 +26,6 @@ import java.sql.Statement;
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.concurrent.TimeUnit;
 
 import com.github.unafraid.votingreward.interfaceprovider.api.IPlayerInstance;
 import com.github.unafraid.votingreward.model.ScopeContainer;
@@ -41,9 +40,6 @@ public class VotingRewardCache
 	private static final String INSERT_QUERY = "INSERT INTO mods_voting_reward (data, scope, time) VALUES (?, ?, ?)";
 	private static final String DELETE_QUERY = "DELETE FROM mods_voting_reward WHERE time < ?";
 	private static final String SELECT_QUERY = "SELECT * FROM mods_voting_reward";
-	
-	// Constants
-	private static final long VOTING_INTERVAL = TimeUnit.HOURS.toMillis(12);
 	
 	// Cache
 	private static final Map<UserScope, ScopeContainer> VOTTERS_CACHE = new EnumMap<>(UserScope.class);
@@ -62,7 +58,7 @@ public class VotingRewardCache
 		}
 		
 		// Cleanup old entries and load the data for votters
-		try (Connection con = VotingRewardInterfaceProvider.getInterface().getDatabaseConnection();
+		try (Connection con = VotingRewardInterface.getInstance().getDatabaseConnection();
 			PreparedStatement ps = con.prepareStatement(DELETE_QUERY);
 			Statement st = con.createStatement())
 		{
@@ -86,14 +82,14 @@ public class VotingRewardCache
 		}
 		catch (SQLException e)
 		{
-			VotingRewardInterfaceProvider.getInterface().logError("Failed to load voting reward data", e);
+			VotingRewardInterface.getInstance().logError("Failed to load voting reward data", e);
 		}
 	}
 	
 	public void markAsVotted(IPlayerInstance player)
 	{
-		final long reuse = System.currentTimeMillis() + VOTING_INTERVAL;
-		try (Connection con = VotingRewardInterfaceProvider.getInterface().getDatabaseConnection();
+		final long reuse = System.currentTimeMillis() + VotingSettings.getInstance().getVotingInterval();
+		try (Connection con = VotingRewardInterface.getInstance().getDatabaseConnection();
 			PreparedStatement ps = con.prepareStatement(INSERT_QUERY))
 		{
 			for (UserScope scope : UserScope.values())
@@ -114,7 +110,7 @@ public class VotingRewardCache
 		}
 		catch (SQLException e)
 		{
-			VotingRewardInterfaceProvider.getInterface().logError("Failed to store voting reward data", e);
+			VotingRewardInterface.getInstance().logError("Failed to store voting reward data", e);
 		}
 	}
 	

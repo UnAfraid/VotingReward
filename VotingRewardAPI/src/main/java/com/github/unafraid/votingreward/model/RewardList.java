@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import com.github.unafraid.votingreward.VotingRewardInterfaceProvider;
+import com.github.unafraid.votingreward.VotingRewardInterface;
 
 /**
  * @author UnAfraid
@@ -60,10 +60,10 @@ public class RewardList
 		List<RewardItem> itemsToDrop = null;
 		for (RewardGroup group : _groups)
 		{
-			final double groupRandom = 100 * VotingRewardInterfaceProvider.getInterface().getRandomDouble();
+			final double groupRandom = 100 * VotingRewardInterface.getInstance().getRandomDouble();
 			if (groupRandom < (group.getChance()))
 			{
-				final double itemRandom = 100 * VotingRewardInterfaceProvider.getInterface().getRandomDouble();
+				final double itemRandom = 100 * VotingRewardInterface.getInstance().getRandomDouble();
 				float cumulativeChance = 0;
 				for (RewardItem item : group.getItems())
 				{
