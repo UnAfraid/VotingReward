@@ -73,7 +73,7 @@ public class ApiResponse<T> implements Serializable
 		//@formatter:off
 		return _ok ? 
 			"ApiResponse{ok=" + _ok + ", result=" + _result + '}' 
-		: 
+		:
 			"ApiResponse{ok=" + _ok + ", errorCode=" + _errorCode + ", errorDescription='" + _errorDescription + '\'' + '}';
 		//@formatter:on
 	}

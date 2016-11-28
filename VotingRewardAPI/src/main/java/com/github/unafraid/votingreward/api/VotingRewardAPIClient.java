@@ -98,7 +98,7 @@ public class VotingRewardAPIClient
 			
 			// Write output
 			try (final OutputStream os = connection.getOutputStream();
-				final BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, StandardCharsets.UTF_8.name())))
+				final BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, StandardCharsets.UTF_8)))
 			{
 				writer.write(OBJECT_MAPPER.writeValueAsString(method));
 			}

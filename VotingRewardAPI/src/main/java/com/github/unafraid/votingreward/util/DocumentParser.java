@@ -20,7 +20,8 @@ package com.github.unafraid.votingreward.util;
 
 import java.io.File;
 import java.io.FileFilter;
-import java.util.logging.Logger;
+import java.io.FileNotFoundException;
+import java.nio.file.DirectoryNotEmptyException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -31,7 +32,7 @@ import org.w3c.dom.Node;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXParseException;
 
-import com.github.unafraid.votingreward.VotingRewardInterfaceProvider;
+import com.github.unafraid.votingreward.VotingRewardInterface;
 
 /**
  * Abstract class for XML parsers.
@@ -39,8 +40,6 @@ import com.github.unafraid.votingreward.VotingRewardInterfaceProvider;
  */
 public abstract class DocumentParser
 {
-	protected final Logger _log = Logger.getLogger(getClass().getName());
-	
 	private static final String JAXP_SCHEMA_LANGUAGE = "http://java.sun.com/xml/jaxp/properties/schemaLanguage";
 	private static final String W3C_XML_SCHEMA = "http://www.w3.org/2001/XMLSchema";
 	/** The default file filter, ".xml" files only. */
@@ -73,7 +72,7 @@ public abstract class DocumentParser
 	 */
 	protected void parseDatapackFile(String path)
 	{
-		parseFile(new File(VotingRewardInterfaceProvider.getInterface().getDocumentRoot(), path));
+		parseFile(new File(VotingRewardInterface.getInstance().getDocumentRoot(), path));
 	}
 	
 	/**
@@ -86,7 +85,7 @@ public abstract class DocumentParser
 	{
 		if (!getCurrentFileFilter().accept(f))
 		{
-			_log.warning(getClass().getSimpleName() + ": Could not parse " + f.getName() + " is not a file or it doesn't exist!");
+			VotingRewardInterface.getInstance().logWarning(getClass().getSimpleName() + ": Could not parse " + f.getName() + " is not a file or it doesn't exist!", new FileNotFoundException());
 			return;
 		}
 		
@@ -105,12 +104,12 @@ public abstract class DocumentParser
 		}
 		catch (SAXParseException e)
 		{
-			_log.warning(getClass().getSimpleName() + ": Could not parse file " + f.getName() + " at line " + e.getLineNumber() + ", column " + e.getColumnNumber() + ": " + e.getMessage());
+			VotingRewardInterface.getInstance().logWarning(getClass().getSimpleName() + ": Could not parse file " + f.getName() + " at line " + e.getLineNumber() + ", column " + e.getColumnNumber() + ": " + e.getMessage(), e);
 			return;
 		}
 		catch (Exception e)
 		{
-			_log.warning(getClass().getSimpleName() + ": Could not parse file " + f.getName() + ": " + e.getMessage());
+			VotingRewardInterface.getInstance().logWarning(getClass().getSimpleName() + ": Could not parse file " + f.getName() + ": " + e.getMessage(), e);
 			return;
 		}
 		parseDocument();
@@ -152,7 +151,7 @@ public abstract class DocumentParser
 	 */
 	protected boolean parseDirectory(String path)
 	{
-		return parseDirectory(new File(VotingRewardInterfaceProvider.getInterface().getDocumentRoot(), path), false);
+		return parseDirectory(new File(VotingRewardInterface.getInstance().getDocumentRoot(), path), false);
 	}
 	
 	/**
@@ -163,7 +162,7 @@ public abstract class DocumentParser
 	 */
 	protected boolean parseDirectory(String path, boolean recursive)
 	{
-		return parseDirectory(new File(VotingRewardInterfaceProvider.getInterface().getDocumentRoot(), path), recursive);
+		return parseDirectory(new File(VotingRewardInterface.getInstance().getDocumentRoot(), path), recursive);
 	}
 	
 	/**
@@ -176,7 +175,7 @@ public abstract class DocumentParser
 	{
 		if (!dir.exists())
 		{
-			_log.warning(getClass().getSimpleName() + ": Folder " + dir.getAbsolutePath() + " doesn't exist!");
+			VotingRewardInterface.getInstance().logWarning(getClass().getSimpleName() + ": Folder " + dir.getAbsolutePath() + " doesn't exist!", new DirectoryNotEmptyException(dir.getAbsolutePath()));
 			return false;
 		}
 		
@@ -594,7 +593,7 @@ public abstract class DocumentParser
 		}
 		catch (IllegalArgumentException e)
 		{
-			_log.warning("[" + getCurrentFile().getName() + "] Invalid value specified for node: " + node.getNodeName() + " specified value: " + node.getNodeValue() + " should be enum value of \"" + clazz.getSimpleName() + "\" using default value: " + defaultValue);
+			VotingRewardInterface.getInstance().logWarning("[" + getCurrentFile().getName() + "] Invalid value specified for node: " + node.getNodeName() + " specified value: " + node.getNodeValue() + " should be enum value of \"" + clazz.getSimpleName() + "\" using default value: " + defaultValue, e);
 			return defaultValue;
 		}
 	}
