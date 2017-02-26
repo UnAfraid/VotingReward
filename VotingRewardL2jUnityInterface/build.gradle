@@ -10,11 +10,16 @@ tasks.withType(JavaCompile) {
 	options.encoding = 'UTF-8'
 }
 
+configurations {
+    provided
+    compile.extendsFrom provided
+}
+
 dependencies {
-	compile project(':VotingRewardInterfaceProvider')
-	compile project(':VotingRewardAPI')
-	compile(group: 'io.netty', name: 'netty-all', version: '4.1.4.Final')
-	compile(fileTree(dir: 'libs', include: '*.jar'))
+	provided project(':VotingRewardInterfaceProvider')
+	provided project(':VotingRewardAPI')
+	provided 'io.netty:netty-all:4.1.4.Final'
+	provided fileTree(dir: 'libs', include: '*.jar')
 }
 
 compileJava {
@@ -28,12 +33,10 @@ compileJava {
     exclude('**/custom/**')
 }
 
-
-
 def generalManifest = manifest {
 	attributes(
 		'Built-By': System.getProperty('user.name'),
-		'Implementation-URL': 'https://github.com/UnAfraid/VotingRewardAPI')
+		'Implementation-URL': 'https://github.com/UnAfraid/VotingReward')
 }
 
 jar {

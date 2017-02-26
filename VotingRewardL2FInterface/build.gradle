@@ -10,11 +10,17 @@ tasks.withType(JavaCompile) {
 	options.encoding = 'UTF-8'
 }
 
-dependencies {
-	compile project(':VotingRewardInterfaceProvider')
-	compile project(':VotingRewardAPI')
-	compile(fileTree(dir: 'libs', include: '*.jar'))
+configurations {
+    provided
+    compile.extendsFrom provided
 }
+
+dependencies {
+	provided project(':VotingRewardInterfaceProvider')
+	provided project(':VotingRewardAPI')
+	provided fileTree(dir: 'libs', include: '*.jar')
+}
+
 
 compileJava {
     //enable compilation in a separate daemon process
@@ -27,12 +33,10 @@ compileJava {
     exclude('**/custom/**')
 }
 
-
-
 def generalManifest = manifest {
 	attributes(
 		'Built-By': System.getProperty('user.name'),
-		'Implementation-URL': 'https://github.com/UnAfraid/VotingRewardAPI')
+		'Implementation-URL': 'https://github.com/UnAfraid/VotingReward')
 }
 
 jar {
