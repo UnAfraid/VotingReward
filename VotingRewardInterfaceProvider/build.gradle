@@ -15,7 +15,7 @@ dependencies {
 
 def generalManifest = manifest {
 	attributes('Built-By': System.getProperty('user.name'),
-			'Implementation-URL': 'https://github.com/UnAfraid/VotingRewardAPI')
+			'Implementation-URL': 'https://github.com/UnAfraid/VotingReward')
 }
 
 jar {
