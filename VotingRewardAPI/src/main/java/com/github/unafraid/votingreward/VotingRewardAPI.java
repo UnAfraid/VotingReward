@@ -18,6 +18,7 @@
  */
 package com.github.unafraid.votingreward;
 
+import java.io.IOException;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executors;
@@ -42,6 +43,7 @@ public class VotingRewardAPI implements IOnVoicedCommandHandler, Runnable
 	};
 	
 	private final Queue<IPlayerInstance> _tasks = new ConcurrentLinkedQueue<>();
+	private final VotingRewardAPIClient _apiClient = new VotingRewardAPIClient(VotingSettings.getInstance().getAPIKey());
 	
 	protected VotingRewardAPI()
 	{
@@ -107,8 +109,7 @@ public class VotingRewardAPI implements IOnVoicedCommandHandler, Runnable
 			try
 			{
 				final long timeRemaining = VotingRewardCache.getInstance().getLastVotedTime(player);
-				final String apiKey = VotingSettings.getInstance().getAPIKey();
-				final UserData data = VotingRewardAPIClient.getInstance().getUserData(player.getIPAddress(), apiKey);
+				final UserData data = _apiClient.getUserData(player.getIPAddress());
 				if ((timeRemaining <= 0) && data.isVoted())
 				{
 					// Give him reward
@@ -139,7 +140,7 @@ public class VotingRewardAPI implements IOnVoicedCommandHandler, Runnable
 					VotingRewardInterface.getInstance().onNotVoted(player);
 				}
 			}
-			catch (VotingRewardAPIException e)
+			catch (VotingRewardAPIException | IOException e)
 			{
 				final String msg = VotingSettings.getInstance().getMessage(MessageType.ON_ERROR);
 				if (msg != null)

@@ -18,6 +18,8 @@
  */
 package com.github.unafraid.votingreward;
 
+import java.io.IOException;
+
 import org.junit.Test;
 
 import com.github.unafraid.votingreward.api.VotingRewardAPIClient;
@@ -36,9 +38,10 @@ public class Main extends TestCase
 	private static final String TEST_IP = "127.0.0.1";
 	
 	@Test
-	public void testGetUserData() throws VotingRewardAPIException
+	public void testGetUserData() throws VotingRewardAPIException, IOException
 	{
-		final UserData data = VotingRewardAPIClient.getInstance().getUserData(TEST_IP, API_KEY);
+		final VotingRewardAPIClient client = new VotingRewardAPIClient(API_KEY);
+		final UserData data = client.getUserData(TEST_IP);
 		
 		// Make sure we read the object
 		assertNotNull(data);
@@ -51,9 +54,10 @@ public class Main extends TestCase
 	}
 	
 	@Test
-	public void testGetServerData() throws VotingRewardAPIException
+	public void testGetServerData() throws VotingRewardAPIException, IOException
 	{
-		final ServerData data = VotingRewardAPIClient.getInstance().getServerData(API_KEY);
+		final VotingRewardAPIClient client = new VotingRewardAPIClient(API_KEY);
+		final ServerData data = client.getServerData();
 		
 		// Make sure we read the object
 		assertNotNull(data);
