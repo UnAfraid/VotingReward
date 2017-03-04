@@ -19,9 +19,9 @@
 package com.github.unafraid.votingreward.api.services;
 
 import com.github.unafraid.votingreward.api.ApiResponse;
-import com.github.unafraid.votingreward.api.objects.TopzoneServerData;
-import com.github.unafraid.votingreward.api.objects.TopzoneUserData;
 import com.github.unafraid.votingreward.api.requests.TopzoneUserDataRequest;
+import com.github.unafraid.votingreward.api.responses.TopzoneServerDataResponse;
+import com.github.unafraid.votingreward.api.responses.TopzoneUserDataResponse;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -41,7 +41,7 @@ public interface ITopzoneService
 		"Charset: UTF-8"
 	})
 	@POST("server_{apiKey}/getServerData")
-	Call<ApiResponse<TopzoneServerData>> getServerData(@Path("apiKey") String apiKey);
+	Call<ApiResponse<TopzoneServerDataResponse>> getServerData(@Path("apiKey") String apiKey);
 	
 	@Headers(
 	{
@@ -50,5 +50,5 @@ public interface ITopzoneService
 		"Charset: UTF-8"
 	})
 	@POST("server_{apiKey}/getUserData")
-	Call<ApiResponse<TopzoneUserData>> getUserData(@Body TopzoneUserDataRequest request, @Path("apiKey") String apiKey);
+	Call<ApiResponse<TopzoneUserDataResponse>> getUserData(@Body TopzoneUserDataRequest request, @Path("apiKey") String apiKey);
 }

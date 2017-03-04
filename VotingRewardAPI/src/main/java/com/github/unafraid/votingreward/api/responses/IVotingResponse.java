@@ -16,32 +16,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.unafraid.votingreward.api.objects;
+package com.github.unafraid.votingreward.api.responses;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import java.io.Serializable;
 
 /**
  * @author UnAfraid
  */
-public class TopzoneServerData implements IVotingObject
+public interface IVotingResponse extends Serializable
 {
-	private static final long serialVersionUID = 1407655109685242745L;
-	
-	private static final String TOTAL_VOTES_FIELD = "totalVotes";
-	private static final String SERVER_RANK_FIELD = "serverRank";
-	
-	@JsonProperty(TOTAL_VOTES_FIELD)
-	private int _totalVotes;
-	@JsonProperty(SERVER_RANK_FIELD)
-	private int _serverRank;
-	
-	public int getTotalVotes()
-	{
-		return _totalVotes;
-	}
-	
-	public int getServerRank()
-	{
-		return _serverRank;
-	}
 }
