@@ -23,7 +23,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * @author UnAfraid
  */
-public class UserData implements IVotingObject
+public class TopzoneUserData implements IVotingObject
 {
 	private static final long serialVersionUID = 1407655109685242745L;
 	
