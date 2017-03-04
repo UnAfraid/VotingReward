@@ -27,7 +27,7 @@ import java.util.concurrent.TimeUnit;
 import com.github.unafraid.votingreward.VotingSettings.MessageType;
 import com.github.unafraid.votingreward.api.TozoneVotingAPIClient;
 import com.github.unafraid.votingreward.api.VotingRewardAPIException;
-import com.github.unafraid.votingreward.api.objects.TopzoneUserData;
+import com.github.unafraid.votingreward.api.responses.TopzoneUserDataResponse;
 import com.github.unafraid.votingreward.interfaceprovider.api.IOnVoicedCommandHandler;
 import com.github.unafraid.votingreward.interfaceprovider.api.IPlayerInstance;
 import com.github.unafraid.votingreward.model.RewardItem;
@@ -109,7 +109,7 @@ public class VotingRewardAPI implements IOnVoicedCommandHandler, Runnable
 			try
 			{
 				final long timeRemaining = VotingRewardCache.getInstance().getLastVotedTime(player);
-				final TopzoneUserData data = _apiClient.getTopzoneUserData(player.getIPAddress());
+				final TopzoneUserDataResponse data = _apiClient.getTopzoneUserData(player.getIPAddress());
 				if ((timeRemaining <= 0) && data.isVoted())
 				{
 					// Give him reward

@@ -16,27 +16,27 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.unafraid.votingreward.api.objects;
+package com.github.unafraid.votingreward.api.responses;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * @author UnAfraid
  */
-public class TopzoneUserData implements IVotingObject
+public class TopzoneUserDataResponse implements IVotingResponse
 {
 	private static final long serialVersionUID = 1407655109685242745L;
 	
-	private static final String VOTTED_FIELD = "isVoted";
-	private static final String SERVER_TIME_FIELD = "serverTime";
-	private static final String VOTED_TIME_FIELD = "voteTime";
-	
-	@JsonProperty(VOTTED_FIELD)
+	@JsonProperty("isVoted")
 	private boolean _hasVoted;
-	@JsonProperty(SERVER_TIME_FIELD)
+	@JsonProperty("serverTime")
 	private long _serverTime;
-	@JsonProperty(VOTED_TIME_FIELD)
+	@JsonProperty("voteTime")
 	private long _voteTime;
+	
+	public TopzoneUserDataResponse()
+	{
+	}
 	
 	public boolean isVoted()
 	{

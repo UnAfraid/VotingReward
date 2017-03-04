@@ -20,9 +20,9 @@ package com.github.unafraid.votingreward.api;
 
 import java.io.IOException;
 
-import com.github.unafraid.votingreward.api.objects.TopzoneServerData;
-import com.github.unafraid.votingreward.api.objects.TopzoneUserData;
 import com.github.unafraid.votingreward.api.requests.TopzoneUserDataRequest;
+import com.github.unafraid.votingreward.api.responses.TopzoneServerDataResponse;
+import com.github.unafraid.votingreward.api.responses.TopzoneUserDataResponse;
 import com.github.unafraid.votingreward.api.services.ITopzoneService;
 
 import retrofit2.Call;
@@ -50,12 +50,12 @@ public class TozoneVotingAPIClient
 		_apiKey = apiKey;
 	}
 	
-	public TopzoneServerData getTopzoneServerData() throws VotingRewardAPIException, IOException
+	public TopzoneServerDataResponse getTopzoneServerData() throws VotingRewardAPIException, IOException
 	{
 		return getResponse(_topzoneService.getServerData(_apiKey));
 	}
 	
-	public TopzoneUserData getTopzoneUserData(String ip) throws VotingRewardAPIException, IOException
+	public TopzoneUserDataResponse getTopzoneUserData(String ip) throws VotingRewardAPIException, IOException
 	{
 		return getResponse(_topzoneService.getUserData(new TopzoneUserDataRequest(ip), _apiKey));
 	}

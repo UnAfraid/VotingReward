@@ -24,8 +24,8 @@ import org.junit.Test;
 
 import com.github.unafraid.votingreward.api.TozoneVotingAPIClient;
 import com.github.unafraid.votingreward.api.VotingRewardAPIException;
-import com.github.unafraid.votingreward.api.objects.TopzoneServerData;
-import com.github.unafraid.votingreward.api.objects.TopzoneUserData;
+import com.github.unafraid.votingreward.api.responses.TopzoneServerDataResponse;
+import com.github.unafraid.votingreward.api.responses.TopzoneUserDataResponse;
 
 import junit.framework.TestCase;
 
@@ -41,7 +41,7 @@ public class Main extends TestCase
 	public void testGetUserData() throws VotingRewardAPIException, IOException
 	{
 		final TozoneVotingAPIClient client = new TozoneVotingAPIClient(API_KEY);
-		final TopzoneUserData data = client.getTopzoneUserData(TEST_IP);
+		final TopzoneUserDataResponse data = client.getTopzoneUserData(TEST_IP);
 		
 		// Make sure we read the object
 		assertNotNull(data);
@@ -57,7 +57,7 @@ public class Main extends TestCase
 	public void testGetServerData() throws VotingRewardAPIException, IOException
 	{
 		final TozoneVotingAPIClient client = new TozoneVotingAPIClient(API_KEY);
-		final TopzoneServerData data = client.getTopzoneServerData();
+		final TopzoneServerDataResponse data = client.getTopzoneServerData();
 		
 		// Make sure we read the object
 		assertNotNull(data);
