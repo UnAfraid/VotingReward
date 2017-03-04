@@ -18,10 +18,10 @@
  */
 package com.github.unafraid.votingreward.api.services;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.unafraid.votingreward.api.ApiResponse;
 import com.github.unafraid.votingreward.api.objects.ServerData;
 import com.github.unafraid.votingreward.api.objects.UserData;
+import com.github.unafraid.votingreward.api.requests.UserDataRequest;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -50,5 +50,5 @@ public interface IVotingService
 		"Charset: UTF-8"
 	})
 	@POST("server_{apiKey}/getUserData")
-	Call<ApiResponse<UserData>> getUserData(@Body @JsonProperty String ip, @Path("apiKey") String apiKey);
+	Call<ApiResponse<UserData>> getUserData(@Body UserDataRequest request, @Path("apiKey") String apiKey);
 }
