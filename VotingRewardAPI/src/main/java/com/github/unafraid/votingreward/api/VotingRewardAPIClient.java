@@ -18,11 +18,11 @@ package com.github.unafraid.votingreward.api;
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 import java.io.IOException;
 
 import com.github.unafraid.votingreward.api.objects.ServerData;
 import com.github.unafraid.votingreward.api.objects.UserData;
+import com.github.unafraid.votingreward.api.requests.UserDataRequest;
 import com.github.unafraid.votingreward.api.services.IVotingService;
 
 import retrofit2.Call;
@@ -42,8 +42,7 @@ public class VotingRewardAPIClient
 	public VotingRewardAPIClient(String apiKey)
 	{
 		//@formatter:off
-		_retrofit = new Retrofit
-			.Builder()
+		_retrofit = new Retrofit.Builder()
 			.baseUrl("https://api.l2topzone.com/v1/")
 			.addConverterFactory(JacksonConverterFactory.create())
 			.build();
@@ -59,7 +58,7 @@ public class VotingRewardAPIClient
 	
 	public UserData getUserData(String ip) throws VotingRewardAPIException, IOException
 	{
-		return getResponse(_service.getUserData(ip, _apiKey));
+		return getResponse(_service.getUserData(new UserDataRequest(ip), _apiKey));
 	}
 	
 	private <T> T getResponse(Call<ApiResponse<T>> call) throws VotingRewardAPIException, IOException
