@@ -25,9 +25,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import com.github.unafraid.votingreward.VotingSettings.MessageType;
-import com.github.unafraid.votingreward.api.VotingRewardAPIClient;
+import com.github.unafraid.votingreward.api.TozoneVotingAPIClient;
 import com.github.unafraid.votingreward.api.VotingRewardAPIException;
-import com.github.unafraid.votingreward.api.objects.UserData;
+import com.github.unafraid.votingreward.api.objects.TopzoneUserData;
 import com.github.unafraid.votingreward.interfaceprovider.api.IOnVoicedCommandHandler;
 import com.github.unafraid.votingreward.interfaceprovider.api.IPlayerInstance;
 import com.github.unafraid.votingreward.model.RewardItem;
@@ -43,7 +43,7 @@ public class VotingRewardAPI implements IOnVoicedCommandHandler, Runnable
 	};
 	
 	private final Queue<IPlayerInstance> _tasks = new ConcurrentLinkedQueue<>();
-	private final VotingRewardAPIClient _apiClient = new VotingRewardAPIClient(VotingSettings.getInstance().getAPIKey());
+	private final TozoneVotingAPIClient _apiClient = new TozoneVotingAPIClient(VotingSettings.getInstance().getAPIKey());
 	
 	protected VotingRewardAPI()
 	{
@@ -109,7 +109,7 @@ public class VotingRewardAPI implements IOnVoicedCommandHandler, Runnable
 			try
 			{
 				final long timeRemaining = VotingRewardCache.getInstance().getLastVotedTime(player);
-				final UserData data = _apiClient.getUserData(player.getIPAddress());
+				final TopzoneUserData data = _apiClient.getTopzoneUserData(player.getIPAddress());
 				if ((timeRemaining <= 0) && data.isVoted())
 				{
 					// Give him reward

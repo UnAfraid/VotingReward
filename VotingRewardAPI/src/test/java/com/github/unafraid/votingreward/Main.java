@@ -22,10 +22,10 @@ import java.io.IOException;
 
 import org.junit.Test;
 
-import com.github.unafraid.votingreward.api.VotingRewardAPIClient;
+import com.github.unafraid.votingreward.api.TozoneVotingAPIClient;
 import com.github.unafraid.votingreward.api.VotingRewardAPIException;
-import com.github.unafraid.votingreward.api.objects.ServerData;
-import com.github.unafraid.votingreward.api.objects.UserData;
+import com.github.unafraid.votingreward.api.objects.TopzoneServerData;
+import com.github.unafraid.votingreward.api.objects.TopzoneUserData;
 
 import junit.framework.TestCase;
 
@@ -40,8 +40,8 @@ public class Main extends TestCase
 	@Test
 	public void testGetUserData() throws VotingRewardAPIException, IOException
 	{
-		final VotingRewardAPIClient client = new VotingRewardAPIClient(API_KEY);
-		final UserData data = client.getUserData(TEST_IP);
+		final TozoneVotingAPIClient client = new TozoneVotingAPIClient(API_KEY);
+		final TopzoneUserData data = client.getTopzoneUserData(TEST_IP);
 		
 		// Make sure we read the object
 		assertNotNull(data);
@@ -56,8 +56,8 @@ public class Main extends TestCase
 	@Test
 	public void testGetServerData() throws VotingRewardAPIException, IOException
 	{
-		final VotingRewardAPIClient client = new VotingRewardAPIClient(API_KEY);
-		final ServerData data = client.getServerData();
+		final TozoneVotingAPIClient client = new TozoneVotingAPIClient(API_KEY);
+		final TopzoneServerData data = client.getTopzoneServerData();
 		
 		// Make sure we read the object
 		assertNotNull(data);

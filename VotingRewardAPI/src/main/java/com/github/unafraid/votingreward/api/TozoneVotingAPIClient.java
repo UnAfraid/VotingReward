@@ -20,10 +20,10 @@ package com.github.unafraid.votingreward.api;
 
 import java.io.IOException;
 
-import com.github.unafraid.votingreward.api.objects.ServerData;
-import com.github.unafraid.votingreward.api.objects.UserData;
-import com.github.unafraid.votingreward.api.requests.UserDataRequest;
-import com.github.unafraid.votingreward.api.services.IVotingService;
+import com.github.unafraid.votingreward.api.objects.TopzoneServerData;
+import com.github.unafraid.votingreward.api.objects.TopzoneUserData;
+import com.github.unafraid.votingreward.api.requests.TopzoneUserDataRequest;
+import com.github.unafraid.votingreward.api.services.ITopzoneService;
 
 import retrofit2.Call;
 import retrofit2.Response;
@@ -33,32 +33,31 @@ import retrofit2.converter.jackson.JacksonConverterFactory;
 /**
  * @author UnAfraid
  */
-public class VotingRewardAPIClient
+public class TozoneVotingAPIClient
 {
-	private final Retrofit _retrofit;
-	private final IVotingService _service;
+	private final ITopzoneService _topzoneService;
 	private final String _apiKey;
 	
-	public VotingRewardAPIClient(String apiKey)
+	public TozoneVotingAPIClient(String apiKey)
 	{
 		//@formatter:off
-		_retrofit = new Retrofit.Builder()
+		final Retrofit retrofit = new Retrofit.Builder()
 			.baseUrl("https://api.l2topzone.com/v1/")
 			.addConverterFactory(JacksonConverterFactory.create())
 			.build();
 		//@formatter:on
-		_service = _retrofit.create(IVotingService.class);
+		_topzoneService = retrofit.create(ITopzoneService.class);
 		_apiKey = apiKey;
 	}
 	
-	public ServerData getServerData() throws VotingRewardAPIException, IOException
+	public TopzoneServerData getTopzoneServerData() throws VotingRewardAPIException, IOException
 	{
-		return getResponse(_service.getServerData(_apiKey));
+		return getResponse(_topzoneService.getServerData(_apiKey));
 	}
 	
-	public UserData getUserData(String ip) throws VotingRewardAPIException, IOException
+	public TopzoneUserData getTopzoneUserData(String ip) throws VotingRewardAPIException, IOException
 	{
-		return getResponse(_service.getUserData(new UserDataRequest(ip), _apiKey));
+		return getResponse(_topzoneService.getUserData(new TopzoneUserDataRequest(ip), _apiKey));
 	}
 	
 	private <T> T getResponse(Call<ApiResponse<T>> call) throws VotingRewardAPIException, IOException
