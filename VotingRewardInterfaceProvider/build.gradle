@@ -1,6 +1,6 @@
-apply plugin: 'java'
-apply plugin: 'maven'
-apply plugin: 'signing'
+apply plugin: "java"
+apply plugin: "maven"
+apply plugin: "signing"
 
 sourceCompatibility = JavaVersion.VERSION_1_7
 targetCompatibility = JavaVersion.VERSION_1_7
@@ -10,41 +10,41 @@ archivesBaseName = "voting-reward-provider"
 version = "1.0.3"
 
 dependencies {
-	compile 'org.slf4j:slf4j-api:1.7.12'
+	compile "org.slf4j:slf4j-api:1.7.12"
 }
 
 def generalManifest = manifest {
-	attributes('Built-By': System.getProperty('user.name'),
-			'Implementation-URL': 'https://github.com/UnAfraid/VotingReward')
+	attributes("Built-By": System.getProperty("user.name"),
+			"Implementation-URL": "https://github.com/UnAfraid/VotingReward")
 }
 
 jar {
-	archiveName = 'VotingRewardInterfaceProvider.jar'
+	archiveName = "VotingRewardInterfaceProvider.jar"
 	manifest {
 		from(generalManifest)
 	}
 }
 
 tasks.withType(JavaCompile) {
-	options.encoding = 'UTF-8'
+	options.encoding = "UTF-8"
 }
 
 tasks.withType(Javadoc) {
-	options.addStringOption('Xdoclint:none', '-quiet')
+	options.addStringOption("Xdoclint:none", "-quiet")
 }
 
 task javadocJar(type: Jar) {
-	classifier = 'javadoc'
+	classifier = "javadoc"
 	from javadoc
 }
 
 task sourcesJar(type: Jar) {
-	classifier = 'sources'
+	classifier = "sources"
 	from sourceSets.main.allSource
 }
 
 tasks.withType(Javadoc) {
-	options.addStringOption('Xdoclint:none', '-quiet')
+	options.addStringOption("Xdoclint:none", "-quiet")
 }
 
 artifacts {
@@ -70,35 +70,35 @@ uploadArchives {
 			}
 
 			pom.project {
-				name 'VotingRewardAPI'
-				packaging 'jar'
-				description 'Voting Reward API for https://l2topzone.com'
-				url 'https://github.com/UnAfraid/VotingReward'
+				name "VotingRewardAPI"
+				packaging "jar"
+				description "Voting Reward API for https://l2topzone.com"
+				url "https://github.com/UnAfraid/VotingReward"
 
 				scm {
-					connection 'scm:git:git@github.com:UnAfraid/VotingReward.git'
-					developerConnection 'scm:git:git@github.com:UnAfraid/VotingReward.git'
-					url 'git@github.com:UnAfraid/VotingReward.git'
+					connection "scm:git:git@github.com:UnAfraid/VotingReward.git"
+					developerConnection "scm:git:git@github.com:UnAfraid/VotingReward.git"
+					url "git@github.com:UnAfraid/VotingReward.git"
 				}
 
 				licenses {
 					license {
-						name 'GPLv3 License'
-						url 'https://opensource.org/licenses/GPL-3.0'
-						distribution 'repo'
+						name "GPLv3 License"
+						url "https://opensource.org/licenses/GPL-3.0"
+						distribution "repo"
 					}
 				}
 
 				developers {
 					developer {
-						id 'UnAfraid'
-						name 'Rumen Nikiforov'
-						email 'unafraid89@gmail.com'
-						organization 'L2JUnity'
-						organizationUrl 'https://l2junity.org'
+						id "UnAfraid"
+						name "Rumen Nikiforov"
+						email "unafraid89@gmail.com"
+						organization "L2JUnity"
+						organizationUrl "https://l2junity.org"
 						roles {
-							role 'architect'
-							role 'developer'
+							role "architect"
+							role "developer"
 						}
 					}
 				}

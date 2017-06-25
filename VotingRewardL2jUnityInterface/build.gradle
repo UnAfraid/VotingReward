@@ -1,13 +1,13 @@
-apply plugin: 'java'
-apply plugin: 'distribution'
+apply plugin: "java"
+apply plugin: "distribution"
 
-defaultTasks('distZip')
+defaultTasks("distZip")
 
 sourceCompatibility = JavaVersion.VERSION_1_7
 targetCompatibility = JavaVersion.VERSION_1_7
 
 tasks.withType(JavaCompile) {
-	options.encoding = 'UTF-8'
+	options.encoding = "UTF-8"
 }
 
 configurations {
@@ -16,10 +16,10 @@ configurations {
 }
 
 dependencies {
-	provided project(':VotingRewardInterfaceProvider')
-	provided project(':VotingRewardAPI')
-	provided 'io.netty:netty-all:4.1.4.Final'
-	provided fileTree(dir: 'libs', include: '*.jar')
+	provided project(":VotingRewardInterfaceProvider")
+	provided project(":VotingRewardAPI")
+	provided "io.netty:netty-all:4.1.4.Final"
+	provided fileTree(dir: "libs", include: "*.jar")
 }
 
 compileJava {
@@ -30,18 +30,18 @@ compileJava {
     options.incremental = true
     
     // Exclude custom from being compiled
-    exclude('**/custom/**')
+    exclude("**/custom/**")
 }
 
 def generalManifest = manifest {
 	attributes(
-		'Built-By': System.getProperty('user.name'),
-		'Implementation-URL': 'https://github.com/UnAfraid/VotingReward')
+		"Built-By": System.getProperty("user.name"),
+		"Implementation-URL": "https://github.com/UnAfraid/VotingReward")
 }
 
 jar {
-	archiveName = 'VotingRewardL2JUnityInterface.jar'
-	exclude('**/custom/**')
+	archiveName = "VotingRewardL2JUnityInterface.jar"
+	exclude("**/custom/**")
 	manifest {
 		from(generalManifest)
 	}
@@ -51,21 +51,21 @@ jar {
 distributions {
 	main {
 		contents {
-			from('dist')
-			into('l2junity-gameserver/dist/libs') {
+			from("dist")
+			into("l2junity-gameserver/dist/libs") {
 				from(configurations.runtime)
 				from(jar)
-				exclude('**/custom/**')
-				exclude('l2jserver.jar')
-				exclude('l2junity-*.jar')
-				exclude('netty-*')
-				exclude('slf4j-*')
+				exclude("**/custom/**")
+				exclude("l2jserver.jar")
+				exclude("l2junity-*.jar")
+				exclude("netty-*")
+				exclude("slf4j-*")
 			}
 			
-			into('l2junity-gameserver/dist/game/data/scripts') {
-				from('src/main/java') {
-					include('**/custom/**')
-					exclude('**/com/**');
+			into("l2junity-gameserver/dist/game/data/scripts") {
+				from("src/main/java") {
+					include("**/custom/**")
+					exclude("**/com/**");
 				}
 			}
 		}

@@ -1,13 +1,13 @@
-apply plugin: 'java'
-apply plugin: 'distribution'
+apply plugin: "java"
+apply plugin: "distribution"
 
-defaultTasks('distZip')
+defaultTasks("distZip")
 
 sourceCompatibility = JavaVersion.VERSION_1_7
 targetCompatibility = JavaVersion.VERSION_1_7
 
 tasks.withType(JavaCompile) {
-	options.encoding = 'UTF-8'
+	options.encoding = "UTF-8"
 }
 
 configurations {
@@ -16,9 +16,9 @@ configurations {
 }
 
 dependencies {
-	provided project(':VotingRewardInterfaceProvider')
-	provided project(':VotingRewardAPI')
-	provided fileTree(dir: 'libs', include: '*.jar')
+	provided project(":VotingRewardInterfaceProvider")
+	provided project(":VotingRewardAPI")
+	provided fileTree(dir: "libs", include: "*.jar")
 }
 
 compileJava {
@@ -29,18 +29,18 @@ compileJava {
     options.incremental = true
     
     // Exclude custom from being compiled
-    exclude('**/custom/**')
+    exclude("**/custom/**")
 }
 
 def generalManifest = manifest {
 	attributes(
-		'Built-By': System.getProperty('user.name'),
-		'Implementation-URL': 'https://github.com/UnAfraid/VotingReward')
+		"Built-By": System.getProperty("user.name"),
+		"Implementation-URL": "https://github.com/UnAfraid/VotingReward")
 }
 
 jar {
-	archiveName = 'VotingRewardL2JInterface.jar'
-	exclude('**/custom/**')
+	archiveName = "VotingRewardL2JInterface.jar"
+	exclude("**/custom/**")
 	manifest {
 		from(generalManifest)
 	}
@@ -50,20 +50,20 @@ jar {
 distributions {
 	main {
 		contents {
-			from('dist')
-			into('L2J_Server/dist/libs') {
+			from("dist")
+			into("L2J_Server/dist/libs") {
 				from(configurations.runtime)
 				from(jar)
-				exclude('**/custom/**')
-				exclude('l2jserver.jar')
-				exclude('mmocore.jar')
-				exclude('slf4j-*')
+				exclude("**/custom/**")
+				exclude("l2jserver.jar")
+				exclude("mmocore.jar")
+				exclude("slf4j-*")
 			}
 			
-			into('L2J_DataPack/dist/game/data/scripts') {
-				from('src/main/java') {
-					include('**/custom/**')
-					exclude('**/com/**');
+			into("L2J_DataPack/dist/game/data/scripts") {
+				from("src/main/java") {
+					include("**/custom/**")
+					exclude("**/com/**");
 				}
 			}
 		}
