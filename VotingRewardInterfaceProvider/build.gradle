@@ -7,7 +7,7 @@ targetCompatibility = JavaVersion.VERSION_1_7
 
 group "com.github.unafraid"
 archivesBaseName = "voting-reward-provider"
-version = "1.0.2"
+version = "1.0.3"
 
 dependencies {
 	compile 'org.slf4j:slf4j-api:1.7.12'
